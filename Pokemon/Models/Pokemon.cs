@@ -10,11 +10,11 @@ namespace Pokemon.Models
     {
         public class Pokemon
         {
-            public int Id { get; }
-            public string Name { get; }
-            public PokemonType Type { get; }
+            private int Id { get; }
+            private string Name { get; }
+            private PokemonType Type { get; }
 
-            public int MaxHp { get; }
+            private int MaxHp { get; }
             public int CurrentHp { get; private set; }
 
             public int Attack { get; }
@@ -26,7 +26,7 @@ namespace Pokemon.Models
                 $"/Assets/Pokemon/Front/{Id}.png";
 
             public string BackImagePath =>
-                $"/Assets/Pokemon/Back/{Id}.png";
+                $"/Assets/Pokemon/Back/{Id}(1).png";
 
             public bool IsFainted => CurrentHp <= 0;
 
