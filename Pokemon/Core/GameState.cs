@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using Pokemon.Models;
 
-namespace Pokemon
+namespace Pokemon.Core
 {
   // ViewModel에서 동작을 제어하는데 사용
   public enum BattlePhase
@@ -22,6 +22,18 @@ namespace Pokemon
     public Trainer? Winner { get; init; }
   }
 
+  /// <summary>
+  /// 전투 진행 중 발생하는 사건 하나하나. UI에서 순서대로(일정 시간마다 다음 것) 재생하는 용도.
+  /// </summary>
+  public abstract record BattleEvent
+  {
+    public sealed record Message(string Text) : BattleEvent;
+
+    public sealed record DamageDealt(bool TargetIsPlayer, int NewHp) : BattleEvent;
+
+    public sealed record PokemonSwitched(bool IsPlayerSide) : BattleEvent;
+  }
+
   public class BattleState
   {
     public int Turn { get; set; } // odd Player, even Opposite
@@ -30,15 +42,15 @@ namespace Pokemon
     public Pokemon.Models.Pokemon PlayerPokemon { get; set; }
     public Pokemon.Models.Pokemon OppPokemon { get; set; }
     public BattlePhase BattlePhase { get; set; }
-    public List<string> BattleLog { get; set; }
+    public List<BattleEvent> Events { get; } = new();
 
     /// <summary>
-    /// ViewModel에서 Binding할 List
+    /// ViewModel에서 순서대로 재생할 메시지 이벤트 추가
     /// </summary>
     /// <param name="message">표시할 문자열</param>
     public void AddLog(string message)
     {
-      BattleLog.Add(message);
+      Events.Add(new BattleEvent.Message(message));
     }
 
     public BattleState(Trainer user, Trainer opposite)
@@ -48,7 +60,6 @@ namespace Pokemon
       PlayerPokemon = user.Pokemons[0];
       OppPokemon = opposite.Pokemons[0];
       BattlePhase = BattlePhase.Start;
-      BattleLog = new();
     }
   }
 
@@ -73,11 +84,15 @@ namespace Pokemon
 
     public void ExecuteAttack(Pokemon.Models.Pokemon src, Skill skill, Pokemon.Models.Pokemon dst)
     {
+      bool targetIsPlayer = dst == state.PlayerPokemon;
+
+      state.AddLog($"{src.Name}의 {skill.Name}!");
+
       int damage = CalculateDamage(src, skill, dst);
       dst.TakeDamage(damage);
 
-      string logMessage = $"{src.Name}의 {skill.Name}! {dst.Name}에게 {damage}의 피해!";
-      state.AddLog(logMessage);
+      state.Events.Add(new BattleEvent.DamageDealt(targetIsPlayer, dst.CurrentHp));
+      state.AddLog($"{dst.Name}은(는) {damage}의 피해를 입었다!");
 
       if (dst.IsFainted)
       {
@@ -128,8 +143,9 @@ namespace Pokemon
           CheckBattleEnd(out var winner);
           return new TurnOutcome { BattleEnded = true, Winner = winner };
         }
-        state.AddLog($"상대가 {next.Name}을(를) 내보냈다!");
         state.OppPokemon = next;
+        state.Events.Add(new BattleEvent.PokemonSwitched(IsPlayerSide: false));
+        state.AddLog($"상대가 {next.Name}을(를) 내보냈다!");
       }
 
       OppositeAction();
@@ -142,8 +158,9 @@ namespace Pokemon
           CheckBattleEnd(out var winner);
           return new TurnOutcome { BattleEnded = true, Winner = winner };
         }
-        state.AddLog($"가라! {next.Name}!");
         state.PlayerPokemon = next;
+        state.Events.Add(new BattleEvent.PokemonSwitched(IsPlayerSide: true));
+        state.AddLog($"가라! {next.Name}!");
       }
 
       return new TurnOutcome { BattleEnded = false };

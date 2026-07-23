@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,19 +19,11 @@ namespace Pokemon.Models
 
         public IReadOnlyList<Skill> Skills { get; }
 
-        // 214(헤라크로스)만 뒷모습 파일명이 "214 (2).png"로 예외적으로 저장되어 있음
-        private static readonly Dictionary<int, string> BackFileOverrides = new()
-        {
-            [214] = "214 (2).png",
-        };
-
         public string FrontImagePath =>
-            $"Pokemon_image/foward/{Id}.png";
+            $"/Assets/Pokemon/Front/{Id}.png";
 
         public string BackImagePath =>
-            BackFileOverrides.TryGetValue(Id, out var fileName)
-                ? $"Pokemon_image/back/{fileName}"
-                : $"Pokemon_image/back/{Id} (1).png";
+            $"/Assets/Pokemon/Back/{Id}.png";
 
         public bool IsFainted => CurrentHp <= 0;
 

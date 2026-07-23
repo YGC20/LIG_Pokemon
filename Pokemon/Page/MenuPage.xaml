@@ -9,8 +9,8 @@
       Title="MenuPage">
 
     <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown" Background="Transparent">
-        <Image Source="/Images/startBackGround.png" Stretch="UniformToFill"/>
-        <Image Source="/Images/logo.png" Stretch="Uniform" Width="400"
+        <Image Source="/Assets/UI/startBackGround.png" Stretch="UniformToFill"/>
+        <Image Source="/Assets/UI/logo.png" Stretch="Uniform" Width="400"
                HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </Page>

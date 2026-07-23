@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Pokemon.Core;
 
 namespace Pokemon.Page
 {
@@ -35,15 +37,34 @@ namespace Pokemon.Page
         private void UseSkill(int index)
         {
             var engine = Game.State.CurrentBattle;
-            if (engine is null)
+            var battlePage = BattlePage.Current;
+            if (engine is null || battlePage is null)
             {
                 return;
             }
 
-            var skill = engine.State.PlayerPokemon.Skills[index];
-            TurnOutcome outcome = engine.PerformPlayerTurn(skill);
-            BattlePage.Current?.RefreshUI();
+            var state = engine.State;
+            var skill = state.PlayerPokemon.Skills[index];
 
+            int eventsBefore = state.Events.Count;
+            TurnOutcome outcome = engine.PerformPlayerTurn(skill);
+            var newEvents = state.Events.Skip(eventsBefore).ToList();
+
+            SetSkillButtonsEnabled(false);
+            battlePage.PlaySequence(newEvents, () => OnTurnMessagesFinished(outcome));
+        }
+
+        private void SetSkillButtonsEnabled(bool isEnabled)
+        {
+            Skill1Button.IsEnabled = isEnabled;
+            Skill2Button.IsEnabled = isEnabled;
+            Skill3Button.IsEnabled = isEnabled;
+            Skill4Button.IsEnabled = isEnabled;
+            BackButton.IsEnabled = isEnabled;
+        }
+
+        private void OnTurnMessagesFinished(TurnOutcome outcome)
+        {
             if (outcome.BattleEnded)
             {
                 bool playerWon = outcome.Winner == Game.State.Player;

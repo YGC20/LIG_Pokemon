@@ -51,10 +51,10 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Button x:Name="Pokemon1Button" Grid.Row="0" Grid.Column="0" Content="스킬1" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon1ButtonClick"/>
-        <Button x:Name="Pokemon2Button" Grid.Row="0" Grid.Column="1" Content="스킬2" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon2ButtonClick"/>
-        <Button x:Name="Pokemon3Button" Grid.Row="1" Grid.Column="0" Content="스킬3" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon3ButtonClick"/>
-        <Button x:Name="Pokemon4Button" Grid.Row="1" Grid.Column="1" Content="스킬4" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon4ButtonClick"/>
+        <Button x:Name="Pokemon1Button" Grid.Row="0" Grid.Column="0" Content="포켓몬" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon1ButtonClick"/>
+        <Button x:Name="Pokemon2Button" Grid.Row="0" Grid.Column="1" Content="포켓몬" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon2ButtonClick"/>
+        <Button x:Name="Pokemon3Button" Grid.Row="1" Grid.Column="0" Content="포켓몬" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon3ButtonClick"/>
+        <Button x:Name="Pokemon4Button" Grid.Row="1" Grid.Column="1" Content="포켓몬" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon4ButtonClick"/>
         <Button x:Name="BackButton" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="550" Content="뒤로가기" Style="{StaticResource PokemonButtonStyle}" Click="BackButtonClick"/>
     </Grid>
 </Page>
