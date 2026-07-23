@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Pokemon.Models;
 
 namespace Pokemon.Page
 {
@@ -25,21 +26,25 @@ namespace Pokemon.Page
 
         private void Boss1Button_Click(object sender, RoutedEventArgs e)
         {
+            Game.State.BattleStart(TrainerDB.CreateGymLeader(1), 1);
             NavigationService.Navigate(new BattlePage("bg-beach.png"));
         }
 
         private void Boss2Button_Click(object sender, RoutedEventArgs e)
         {
+            Game.State.BattleStart(TrainerDB.CreateGymLeader(2), 2);
             NavigationService.Navigate(new BattlePage("bg-city.png"));
         }
 
         private void Boss3Button_Click(object sender, RoutedEventArgs e)
         {
+            Game.State.BattleStart(TrainerDB.CreateGymLeader(3), 3);
             NavigationService.Navigate(new BattlePage("bg-dampcave.png"));
         }
 
         private void Boss4Button_Click(object sender, RoutedEventArgs e)
         {
+            Game.State.BattleStart(TrainerDB.CreateGymLeader(4), 4);
             NavigationService.Navigate(new BattlePage("bg-forest.png"));
         }
     }

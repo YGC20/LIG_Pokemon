@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Pokemon.Models;
@@ -8,9 +9,9 @@ public class Trainer
 {
     public string Name { get; }
 
-    public List<Pokemon.Pokemon> Pokemons { get; } = [];
+    public List<Pokemon> Pokemons { get; } = [];
 
-    public IEnumerable<Pokemon.Pokemon> AvailablePokemons =>
+    public IEnumerable<Pokemon> AvailablePokemons =>
         Pokemons.Where(pokemon => !pokemon.IsFainted);
 
     public int RemainingPokemonCount =>
