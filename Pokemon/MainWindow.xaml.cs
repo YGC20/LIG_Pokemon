@@ -19,6 +19,7 @@ namespace Pokemon
         public MainWindow()
         {
             InitializeComponent();
+            MainFrame.Navigate(new Uri("Page/MenuPage.xaml", UriKind.Relative));
         }
     }
 }

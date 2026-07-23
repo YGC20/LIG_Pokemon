@@ -47,7 +47,5 @@ namespace Pokemon.Page
         {
             NavigationService.Navigate(new MenuButtonPage());
         }
-
-        
     }
 }
