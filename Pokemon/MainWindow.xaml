@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Pokemon"
         mc:Ignorable="d"
         Background="Black"
-        Title="MainWindow" Height="850" Width="600">
+        Title="MainWindow" Height="700" Width="700">
     <Grid>
         <Frame x:Name="MainFrame" Grid.Row="0" NavigationUIVisibility="Hidden"/>
     </Grid>

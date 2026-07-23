@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Pokemon.Page"
       mc:Ignorable="d"
-      d:DesignHeight="850" d:DesignWidth="600"
+      d:DesignHeight="700" d:DesignWidth="700"
       Title="BattlePage">
 
     <Page.Resources>
@@ -44,8 +44,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="380"/>
+            <RowDefinition Height="0.6*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
@@ -53,7 +53,32 @@
                x:Name="BattleImageFrame"
                NavigationUIVisibility="Hidden"/>
 
+        <!-- 상대 포켓몬 정보 (우상단): 이름/체력 박스 + 스프라이트를 한 덩어리로 배치 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,70,60,0">
+            <Border Background="#E6FFFFFF" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10"
+                    Padding="10,6" VerticalAlignment="Center" Margin="0,0,10,-30">
+                <StackPanel>
+                    <TextBlock x:Name="OppNameText" FontSize="16" FontWeight="Bold" Foreground="#5A3D8C" HorizontalAlignment="Right"/>
+                    <ProgressBar x:Name="OppHpBar" Width="150" Height="14" Minimum="0" Foreground="LimeGreen"/>
+                </StackPanel>
+            </Border>
+            <Image x:Name="OppSpriteImage" Width="170" Stretch="Uniform" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- 내 포켓몬 정보 (좌하단): 스프라이트 + 이름/체력 박스를 한 덩어리로 배치 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="50,0,0,-20">
+            <Image x:Name="PlayerSpriteImage" Width="170" Stretch="Uniform" VerticalAlignment="Center"/>
+            <Border Background="#E6FFFFFF" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10"
+                    Padding="10,6" VerticalAlignment="Center" Margin="10,0,0,-60">
+                <StackPanel>
+                    <TextBlock x:Name="PlayerNameText" FontSize="16" FontWeight="Bold" Foreground="#5A3D8C"/>
+                    <ProgressBar x:Name="PlayerHpBar" Width="150" Height="14" Minimum="0" Foreground="LimeGreen"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
         <Border Grid.Row="1"
+                x:Name="MessageBorder"
                 Background="#E6FFFFFF"
                 BorderBrush="DarkGray"
                 BorderThickness="10"

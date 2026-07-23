@@ -25,7 +25,7 @@ namespace Pokemon.Page
         public BattleImagePage(string bgFileName)
         {
             InitializeComponent();
-            BackgroundImage.Source = new BitmapImage(new Uri($"pack://siteoforigin:,,,/Images/{bgFileName}"));
+            BackgroundImage.Source = new BitmapImage(new Uri($"pack://siteoforigin:,,,/Assets/UI/{bgFileName}"));
         }
     }
 }
