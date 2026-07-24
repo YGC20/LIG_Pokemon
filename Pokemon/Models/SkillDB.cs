@@ -69,3 +69,4 @@ internal static class SkillDB
         _ => throw new System.ArgumentOutOfRangeException(nameof(type)),
     };
 }
+
