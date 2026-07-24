@@ -32,9 +32,9 @@ namespace Pokemon.Core
 
     public sealed record DamageDealt(bool TargetIsPlayer, int NewHp) : BattleEvent;
 
-    public sealed record PokemonSwitched(
-      bool IsPlayerSide,
-      int HpAtSwitch) : BattleEvent;
+    public sealed record PokemonSwitched(bool IsPlayerSide, int HpAtSwitch) : BattleEvent;
+
+    public sealed record AttackEffect(bool AttackerIsPlayer, PokemonType SkillType) : BattleEvent;
   }
 
   public class BattleState
@@ -88,8 +88,10 @@ namespace Pokemon.Core
     public void ExecuteAttack(Pokemon.Models.Pokemon src, Skill skill, Pokemon.Models.Pokemon dst)
     {
       bool targetIsPlayer = dst == state.PlayerPokemon;
+      bool attackerIsPlayer = src == state.PlayerPokemon;
 
       state.AddLog($"{src.Name}의 {skill.Name}!");
+      state.Events.Add(new BattleEvent.AttackEffect(attackerIsPlayer, skill.Type));
 
       int damage = CalculateDamage(src, skill, dst);
       dst.TakeDamage(damage);

@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -31,6 +32,11 @@ namespace Pokemon.Page
                 Skill2Button.Content = skills[1].Name;
                 Skill3Button.Content = skills[2].Name;
                 Skill4Button.Content = skills[3].Name;
+
+                Skill1Button.DataContext = skills[0];
+                Skill2Button.DataContext = skills[1];
+                Skill3Button.DataContext = skills[2];
+                Skill4Button.DataContext = skills[3];
             }
         }
 
