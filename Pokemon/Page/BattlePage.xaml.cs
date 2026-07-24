@@ -252,6 +252,10 @@ namespace Pokemon.Page
           RefreshSide(
             switched.IsPlayerSide,
             switched.HpAtSwitch);
+          // 교체 시점의 HP(HpAtSwitch)로 보여줘야 함. 여기서 실시간 CurrentHp를 읽으면,
+          // 같은 턴 안에서 이미 계산까지 끝난(교체 직후 상대 반격 등) "미래의" 깎인 체력이
+          // 반격 애니메이션이 뜨기도 전에 미리 반영돼 보이는 문제가 있었음.
+          RefreshSide(switched.IsPlayerSide, switched.HpAtSwitch);
           continue;
         }
 
@@ -361,7 +365,7 @@ namespace Pokemon.Page
       var bar = damage.TargetIsPlayer ? PlayerHpBar : OppHpBar;
       var animation = new DoubleAnimation
       {
-        To = damage.NewHp,
+        To = HpRatioPercent(damage.TargetIsPlayer, damage.NewHp),
         Duration = HpAnimationDuration,
       };
       bar.BeginAnimation(RangeBase.ValueProperty, animation);
@@ -372,10 +376,41 @@ namespace Pokemon.Page
       var bar = recovery.TargetIsPlayer ? PlayerHpBar : OppHpBar;
       var animation = new DoubleAnimation
       {
-        To = recovery.NewHp,
+        To = HpRatioPercent(recovery.TargetIsPlayer, recovery.NewHp),
         Duration = HpAnimationDuration,
       };
       bar.BeginAnimation(RangeBase.ValueProperty, animation);
+    }
+
+    /// <summary>
+    /// 몬스터가 바뀌어도(교체) 항상 "현재 HP / 최대 HP" 비율(0~100)로 바를 채우기 위한 헬퍼.
+    /// 바의 Maximum은 100으로 고정하고, 실제 최대 HP는 여기서 조회해 비율만 계산한다.
+    /// </summary>
+    private double HpRatioPercent(bool isPlayerTarget, int currentHp)
+    {
+      var state = Game.State.CurrentBattle?.State;
+      if (state is null)
+      {
+        return 0;
+      }
+
+      var pokemon = isPlayerTarget ? state.PlayerPokemon : state.OppPokemon;
+      if (pokemon.MaxHp <= 0)
+      {
+        return 0;
+      }
+
+      return Math.Clamp(100.0 * currentHp / pokemon.MaxHp, 0, 100);
+    }
+
+    /// <summary>
+    /// 애니메이션 없이 즉시 특정 비율로 바를 맞춤. 포켓몬 교체처럼 "지금 값이 뭐였든 상관없이
+    /// 무조건 이 값으로" 스냅해야 하는 경우 사용함. 0초짜리 애니메이션으로 덮어써서
+    /// 이전에 걸려 있던(HoldEnd로 값이 붙잡혀 있는) 애니메이션이 남아있어도 확실히 새 값으로 교체됨.
+    /// </summary>
+    private static void SnapHpBar(RangeBase bar, double percent)
+    {
+      bar.BeginAnimation(RangeBase.ValueProperty, new DoubleAnimation(percent, TimeSpan.Zero));
     }
 
     /// <summary>
@@ -473,6 +508,7 @@ namespace Pokemon.Page
     private void RefreshSide(
       bool isPlayerSide,
       int? displayedHp = null)
+    private void RefreshSide(bool isPlayerSide, int? hpOverride = null)
     {
       var engine = Game.State.CurrentBattle;
       if (engine is null)
@@ -488,6 +524,7 @@ namespace Pokemon.Page
         PlayerHpBar.BeginAnimation(RangeBase.ValueProperty, null);
         PlayerHpBar.Maximum = pokemon.MaxHp;
         PlayerHpBar.Value = displayedHp ?? pokemon.CurrentHp;
+        SnapHpBar(PlayerHpBar, HpRatioPercent(isPlayerTarget: true, hpOverride ?? pokemon.CurrentHp));
         PlayerSpriteImage.Source = LoadSprite(pokemon.BackImagePath);
       }
       else
@@ -497,6 +534,7 @@ namespace Pokemon.Page
         OppHpBar.BeginAnimation(RangeBase.ValueProperty, null);
         OppHpBar.Maximum = pokemon.MaxHp;
         OppHpBar.Value = displayedHp ?? pokemon.CurrentHp;
+        SnapHpBar(OppHpBar, HpRatioPercent(isPlayerTarget: false, hpOverride ?? pokemon.CurrentHp));
         OppSpriteImage.Source = LoadSprite(pokemon.FrontImagePath);
       }
     }
