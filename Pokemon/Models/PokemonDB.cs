@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Pokemon.Models;
 
 // 실제 도감번호를 그대로 사용(스프라이트 파일명과 매칭). 타입은 5종 체계에 맞춰 임의로 배정.
@@ -26,4 +30,27 @@ internal static class PokemonDB
     public static readonly Pokemon Lucario = Make(448, "루카리오", PokemonType.Fire, 85, 45, 28);
     public static readonly Pokemon Dialga = Make(483, "디아루가", PokemonType.Electric, 105, 50, 38);
     public static readonly Pokemon Palkia = Make(484, "펄기아", PokemonType.Water, 100, 50, 36);
+
+    private static readonly IReadOnlyList<Pokemon> AllPokemon =
+    [
+        Pikachu, Slowpoke, Magikarp, Snorlax, Dragonite,
+        Mewtwo, Heracross, HoOh, Mudkip, Trapinch,
+        Castform, Piplup, Bibarel, Pachirisu, Drifloon,
+        Garchomp, Lucario, Dialga, Palkia
+    ];
+
+    public static IReadOnlyList<Pokemon> CreateRandomRoster(int count = 4)
+    {
+        if (count < 1 || count > AllPokemon.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count));
+        }
+
+        return AllPokemon
+            .OrderBy(_ => Random.Shared.Next())
+            .Take(count)
+            .Select(template =>
+                template.Clone(SkillDB.GetRandomMoves(4)))
+            .ToArray();
+    }
 }
