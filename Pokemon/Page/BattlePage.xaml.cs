@@ -47,6 +47,7 @@ namespace Pokemon.Page
             BattleImageFrame.Navigate(new BattleImagePage(bgFileName));
             RefreshUI();
             TextBox.Text = ReadyPrompt;
+            AudioService.PlayBgm("battle.mp3");
         }
 
         /// <summary>
@@ -103,6 +104,8 @@ namespace Pokemon.Page
 
         private void AnimateHp(BattleEvent.DamageDealt damage)
         {
+            AudioService.PlaySfx("attack_sound.mp3");
+
             var bar = damage.TargetIsPlayer ? PlayerHpBar : OppHpBar;
             var animation = new DoubleAnimation
             {
