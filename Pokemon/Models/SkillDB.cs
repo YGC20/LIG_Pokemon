@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Pokemon.Models;
 
-// 모든 기술 중 4개를 중복 없이 무작위로 뽑아 포켓몬에게 배정한다.
+// 타입별 전용 기술 4개(위력 오름차순)를 정의. PokemonDB에서 포켓몬별 무브셋을 구성할 때 사용.
 internal static class SkillDB
 {
     // Water
@@ -61,32 +61,6 @@ internal static class SkillDB
     public static readonly Skill Slam = new("슬램", PokemonType.Normal, 60);
     public static readonly Skill HyperBeam = new("하이퍼빔", PokemonType.Normal, 120);
 
-    private static readonly IReadOnlyList<Skill> AllSkills =
-    [
-        WaterGun, BubbleBeam, Surf, HydroPump,
-        VineWhip, RazorLeaf, LeafBlade, FrenzyPlant,
-        ThunderShock, Discharge, Thunderbolt, Thunder,
-        Ember, FireFang, Flamethrower, Overheat,
-        MudSlap, SandTomb, Dig, Earthquake,
-        Gust, WingAttack, AirSlash, BraveBird,
-        IceShard, AuroraBeam, IceBeam, Blizzard,
-        LowSweep, KarateChop, CloseCombat, HighJumpKick,
-        Scratch, Tackle, Slam, HyperBeam
-    ];
-
-    public static IReadOnlyList<Skill> GetRandomMoves(int count = 4)
-    {
-        if (count < 1 || count > AllSkills.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count));
-        }
-
-        return AllSkills
-            .OrderBy(_ => Random.Shared.Next())
-            .Take(count)
-            .ToArray();
-    }
-
     public static IReadOnlyList<Skill> GetMovesFor(PokemonType type) => type switch
     {
         PokemonType.Water => [WaterGun, BubbleBeam, Surf, HydroPump],
@@ -100,4 +74,20 @@ internal static class SkillDB
         PokemonType.Normal => [Scratch, Tackle, Slam, HyperBeam],
         _ => throw new ArgumentOutOfRangeException(nameof(type)),
     };
+
+    // 자기 타입 기술 중 가장 약한 1개를 몸통박치기(아무나 쓸 수 있는 범용기)로 교체.
+    // PokemonDB에서 무브셋을 따로 지정하지 않은 포켓몬의 기본 무브셋으로 사용됨.
+    public static IReadOnlyList<Skill> GetMovesForWithTackle(PokemonType type)
+    {
+        if (type == PokemonType.Normal)
+        {
+            return GetMovesFor(type);
+        }
+
+        return GetMovesFor(type)
+            .Skip(1)
+            .Append(Tackle)
+            .OrderBy(skill => skill.Power)
+            .ToArray();
+    }
 }

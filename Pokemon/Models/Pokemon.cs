@@ -68,7 +68,9 @@ namespace Pokemon.Models
         // PokemonDB의 static 인스턴스는 여러 전투에서 재사용되는 "템플릿"이므로,
         // 실제 전투 로스터를 만들 때는 항상 이 메서드로 HP가 초기화된 새 인스턴스를 만들어야 함.
         // statMultiplier: 무한 모드처럼 트레이너 단계가 오를수록 상대를 강화할 때 사용(기본 1.0 = 원본 그대로).
-        public Pokemon Clone(IEnumerable<Skill>? skills = null, double statMultiplier = 1.0) =>
+        // 스킬은 항상 템플릿에 저장된 고정 무브셋을 그대로 씀(포켓몬-스킬 타입 불일치 방지를 위해
+        // 랜덤 스킬 배정 기능은 폐기).
+        public Pokemon Clone(double statMultiplier = 1.0) =>
             new(
                 Id,
                 Name,
@@ -76,7 +78,7 @@ namespace Pokemon.Models
                 (int)Math.Round(MaxHp * statMultiplier),
                 (int)Math.Round(Attack * statMultiplier),
                 (int)Math.Round(Defense * statMultiplier),
-                skills ?? Skills,
+                Skills,
                 SpriteKey);
     }
 }
