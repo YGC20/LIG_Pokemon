@@ -249,9 +249,6 @@ namespace Pokemon.Page
 
         if (battleEvent is BattleEvent.PokemonSwitched switched)
         {
-          RefreshSide(
-            switched.IsPlayerSide,
-            switched.HpAtSwitch);
           // 교체 시점의 HP(HpAtSwitch)로 보여줘야 함. 여기서 실시간 CurrentHp를 읽으면,
           // 같은 턴 안에서 이미 계산까지 끝난(교체 직후 상대 반격 등) "미래의" 깎인 체력이
           // 반격 애니메이션이 뜨기도 전에 미리 반영돼 보이는 문제가 있었음.
@@ -505,9 +502,6 @@ namespace Pokemon.Page
       RefreshSide(isPlayerSide: true);
     }
 
-    private void RefreshSide(
-      bool isPlayerSide,
-      int? displayedHp = null)
     private void RefreshSide(bool isPlayerSide, int? hpOverride = null)
     {
       var engine = Game.State.CurrentBattle;
@@ -521,9 +515,6 @@ namespace Pokemon.Page
       {
         var pokemon = state.PlayerPokemon;
         PlayerNameText.Text = pokemon.Name;
-        PlayerHpBar.BeginAnimation(RangeBase.ValueProperty, null);
-        PlayerHpBar.Maximum = pokemon.MaxHp;
-        PlayerHpBar.Value = displayedHp ?? pokemon.CurrentHp;
         SnapHpBar(PlayerHpBar, HpRatioPercent(isPlayerTarget: true, hpOverride ?? pokemon.CurrentHp));
         PlayerSpriteImage.Source = LoadSprite(pokemon.BackImagePath);
       }
@@ -531,9 +522,6 @@ namespace Pokemon.Page
       {
         var pokemon = state.OppPokemon;
         OppNameText.Text = pokemon.Name;
-        OppHpBar.BeginAnimation(RangeBase.ValueProperty, null);
-        OppHpBar.Maximum = pokemon.MaxHp;
-        OppHpBar.Value = displayedHp ?? pokemon.CurrentHp;
         SnapHpBar(OppHpBar, HpRatioPercent(isPlayerTarget: false, hpOverride ?? pokemon.CurrentHp));
         OppSpriteImage.Source = LoadSprite(pokemon.FrontImagePath);
       }

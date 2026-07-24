@@ -95,7 +95,6 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
                     Margin="50,0,0,-20">
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="50,0,0,-30">
             <Image x:Name="PlayerSpriteImage" Width="170" Stretch="Uniform" VerticalAlignment="Center"/>
             <Border Background="#E6FFFFFF" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10"
                     Padding="10,6" VerticalAlignment="Center" Margin="120,0,0,-30">
