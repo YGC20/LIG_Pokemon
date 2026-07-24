@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Pokemon.Core;
 
 namespace Pokemon.Page
 {
@@ -21,6 +22,7 @@ namespace Pokemon.Page
         public MenuPage()
         {
             InitializeComponent();
+            AudioService.PlayBgm("title_bgm.mp3");
         }
 
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

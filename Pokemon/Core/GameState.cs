@@ -30,7 +30,7 @@ namespace Pokemon.Core
   {
     public sealed record Message(string Text) : BattleEvent;
 
-    public sealed record DamageDealt(bool TargetIsPlayer, int NewHp) : BattleEvent;
+    public sealed record DamageDealt(bool TargetIsPlayer, int NewHp) : BattleEvent; 
 
     public sealed record HpRecovered(bool TargetIsPlayer, int NewHp) : BattleEvent;
 

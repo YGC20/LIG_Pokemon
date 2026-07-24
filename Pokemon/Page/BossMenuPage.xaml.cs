@@ -23,6 +23,7 @@ namespace Pokemon.Page
         public BossMenuPage()
         {
             InitializeComponent();
+            AudioService.PlayBgm("battle_choice_bgm.mp3");
             UpdateBossButtonStates();
         }
 
