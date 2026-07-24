@@ -4,24 +4,28 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Pokemon.Page"
-      mc:Ignorable="d" 
+      xmlns:core="clr-namespace:Pokemon.Core"
+      mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SkillButtonPage">
 
     <Page.Resources>
+        <core:TypeToColorConverter x:Key="TypeToColorConverter"/>
+
         <Style x:Key="SkillButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="1"/>
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#5A3D8C"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderBrush" Value="GreenYellow"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="ButtonBorder"
                         Background="#E6FFFFFF"
-                        BorderBrush="GreenYellow"
-                        BorderThickness="3"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="5"
                         CornerRadius="16">
                             <ContentPresenter HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
@@ -51,10 +55,10 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Button x:Name="Skill1Button" Grid.Row="0" Grid.Column="0" Content="스킬1" Style="{StaticResource SkillButtonStyle}" Click="Skill1ButtonClick"/>
-        <Button x:Name="Skill2Button" Grid.Row="0" Grid.Column="1" Content="스킬2" Style="{StaticResource SkillButtonStyle}" Click="Skill2ButtonClick"/>
-        <Button x:Name="Skill3Button" Grid.Row="1" Grid.Column="0" Content="스킬3" Style="{StaticResource SkillButtonStyle}" Click="Skill3ButtonClick"/>
-        <Button x:Name="Skill4Button" Grid.Row="1" Grid.Column="1" Content="스킬4" Style="{StaticResource SkillButtonStyle}" Click="Skill4ButtonClick"/>
+        <Button x:Name="Skill1Button" Grid.Row="0" Grid.Column="0" Content="스킬1" Style="{StaticResource SkillButtonStyle}" BorderBrush="{Binding Type, Converter={StaticResource TypeToColorConverter}}" Click="Skill1ButtonClick"/>
+        <Button x:Name="Skill2Button" Grid.Row="0" Grid.Column="1" Content="스킬2" Style="{StaticResource SkillButtonStyle}" BorderBrush="{Binding Type, Converter={StaticResource TypeToColorConverter}}" Click="Skill2ButtonClick"/>
+        <Button x:Name="Skill3Button" Grid.Row="1" Grid.Column="0" Content="스킬3" Style="{StaticResource SkillButtonStyle}" BorderBrush="{Binding Type, Converter={StaticResource TypeToColorConverter}}" Click="Skill3ButtonClick"/>
+        <Button x:Name="Skill4Button" Grid.Row="1" Grid.Column="1" Content="스킬4" Style="{StaticResource SkillButtonStyle}" BorderBrush="{Binding Type, Converter={StaticResource TypeToColorConverter}}" Click="Skill4ButtonClick"/>
         <Button x:Name="BackButton" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="550" Content="뒤로가기" Style="{StaticResource SkillButtonStyle}" Click="BackButtonClick"/>
     </Grid>
 </Page>

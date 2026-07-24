@@ -21,7 +21,7 @@
                         <Border x:Name="ButtonBorder"
                         Background="#E6FFFFFF"
                         BorderBrush="GreenYellow"
-                        BorderThickness="3"
+                        BorderThickness="5"
                         CornerRadius="16">
                             <ContentPresenter HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
