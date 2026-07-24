@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Pokemon.Core;
+using Pokemon.Models;
 
 namespace Pokemon.Page
 {
@@ -28,16 +29,35 @@ namespace Pokemon.Page
             var skills = Game.State.CurrentBattle?.State.PlayerPokemon.Skills;
             if (skills is { Count: 4 })
             {
-                Skill1Button.Content = skills[0].Name;
-                Skill2Button.Content = skills[1].Name;
-                Skill3Button.Content = skills[2].Name;
-                Skill4Button.Content = skills[3].Name;
+                Skill1Button.Content = BuildSkillContent(skills[0]);
+                Skill2Button.Content = BuildSkillContent(skills[1]);
+                Skill3Button.Content = BuildSkillContent(skills[2]);
+                Skill4Button.Content = BuildSkillContent(skills[3]);
 
                 Skill1Button.DataContext = skills[0];
                 Skill2Button.DataContext = skills[1];
                 Skill3Button.DataContext = skills[2];
                 Skill4Button.DataContext = skills[3];
             }
+        }
+
+        // 스킬 이름 아래에 타입/위력 상세 정보를 함께 보여줌
+        private static object BuildSkillContent(Skill skill)
+        {
+            var panel = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
+            panel.Children.Add(new TextBlock
+            {
+                Text = skill.Name,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+            panel.Children.Add(new TextBlock
+            {
+                Text = $"{skill.Type.ToKoreanName()} · 위력 {skill.Power}",
+                FontSize = 13,
+                FontWeight = FontWeights.Normal,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+            return panel;
         }
 
         private void UseSkill(int index)
@@ -57,7 +77,7 @@ namespace Pokemon.Page
             var newEvents = state.Events.Skip(eventsBefore).ToList();
 
             SetSkillButtonsEnabled(false);
-            battlePage.PlaySequence(newEvents, () => OnTurnMessagesFinished(outcome));
+            battlePage.PlaySequence(newEvents, () => OnTurnMessagesFinished(outcome), showReadyPrompt: !outcome.RequiresPlayerSwitch);
         }
 
         private void SetSkillButtonsEnabled(bool isEnabled)
@@ -81,6 +101,12 @@ namespace Pokemon.Page
 
                 var mainWindow = (Pokemon.MainWindow)System.Windows.Application.Current.MainWindow;
                 mainWindow.MainFrame.Navigate(new ResultPage(playerWon));
+                return;
+            }
+
+            if (outcome.RequiresPlayerSwitch)
+            {
+                NavigationService.Navigate(new PokemonButtonPage());
                 return;
             }
 
