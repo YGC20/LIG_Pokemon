@@ -27,6 +27,11 @@ namespace Pokemon.Page
 
             gameCleared = playerWon && Game.State.AllBossesDefeated;
 
+            if (playerWon)
+            {
+                AudioService.PlaySfx("level_up.mp3");
+            }
+
             ResultText.Text = gameCleared
                 ? "축하합니다!\n모든 관장을 격파했습니다!\nGAME CLEAR!"
                 : playerWon

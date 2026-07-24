@@ -8,6 +8,7 @@ namespace Pokemon.Models;
 internal static class TrainerDB
 {
     private const int RosterSize = 4;
+    private const int InfiniteRosterSize = 3;
 
     private static readonly string[] Adjectives =
     [
@@ -84,6 +85,21 @@ internal static class TrainerDB
         return CreateRandomTrainer(
             CreateRandomOpponentName(),
             GetRandomTrainerSpriteKey());
+    }
+
+    /// <summary>
+    /// 무한 모드에서 트레이너 번호에 맞춰 상대를 생성한다.
+    /// 번호가 오를수록(3%씩) 스탯이 강화되고, 로스터는 보스전보다 적은 3마리로 구성된다.
+    /// </summary>
+    public static Trainer CreateRandomTrainer(int trainerNumber)
+    {
+        var trainer = new Trainer(
+            $"{CreateRandomOpponentName()} #{trainerNumber}",
+            GetRandomTrainerSpriteKey());
+
+        double statMultiplier = 1.0 + (trainerNumber - 1) * 0.03;
+        trainer.Pokemons.AddRange(PokemonDB.CreateRandomRoster(InfiniteRosterSize, statMultiplier));
+        return trainer;
     }
 
     private static string CreateRandomOpponentName()

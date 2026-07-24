@@ -94,6 +94,14 @@ namespace Pokemon.Page
             if (outcome.BattleEnded)
             {
                 bool playerWon = outcome.Winner == Game.State.Player;
+
+                if (playerWon && Game.State.CurrentTrainerNumber > 0)
+                {
+                    // 무한 모드: 트레이너를 쓰러뜨림 -> 보상 3택1 화면으로
+                    BattlePage.Current?.ShowRewardSelection();
+                    return;
+                }
+
                 if (playerWon && Game.State.CurrentBossNumber is int bossNumber)
                 {
                     Game.State.MarkBossDefeated(bossNumber);

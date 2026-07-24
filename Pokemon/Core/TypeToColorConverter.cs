@@ -24,6 +24,10 @@ namespace Pokemon.Core
                 PokemonType.Grass => new SolidColorBrush(Colors.Green),
                 PokemonType.Electric => new SolidColorBrush(Colors.Gold),
                 PokemonType.Ground => new SolidColorBrush(Colors.SaddleBrown),
+                PokemonType.Flying => new SolidColorBrush(Colors.SkyBlue),
+                PokemonType.Ice => new SolidColorBrush(Colors.PaleTurquoise),
+                PokemonType.Fighting => new SolidColorBrush(Colors.Firebrick),
+                PokemonType.Normal => new SolidColorBrush(Colors.Tan),
                 _ => new SolidColorBrush(Colors.Gray)
             };
         }

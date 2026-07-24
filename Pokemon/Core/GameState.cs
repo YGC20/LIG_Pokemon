@@ -62,8 +62,14 @@ namespace Pokemon.Core
     {
       Player = user;
       Opposite = opposite;
-      PlayerPokemon = user.Pokemons[0];
-      OppPokemon = opposite.Pokemons[0];
+
+      // 무한 모드에서는 이전 전투에서 1번 포켓몬이 기절한 채로 다음 전투에 넘어올 수 있으므로,
+      // 항상 첫 번째 "살아있는" 포켓몬을 선택함(단순히 Pokemons[0]을 쓰면 안 됨).
+      PlayerPokemon = user.AvailablePokemons.FirstOrDefault()
+        ?? throw new InvalidOperationException("사용 가능한 플레이어 포켓몬이 없습니다.");
+      OppPokemon = opposite.AvailablePokemons.FirstOrDefault()
+        ?? throw new InvalidOperationException("상대가 사용 가능한 포켓몬이 없습니다.");
+
       BattlePhase = BattlePhase.Start;
     }
   }
@@ -331,13 +337,62 @@ namespace Pokemon.Core
 
     public int? CurrentBossNumber { get; set; }
 
+    /// <summary>
+    /// 무한 모드에서 현재 몇 번째 트레이너와 싸우고 있는지. Run 시작 전에는 0.
+    /// </summary>
+    public int CurrentTrainerNumber { get; private set; }
+
     public void BattleStart(Trainer opponent, int bossNumber)
     {
       // 새 전투마다 주인공 로스터를 새로 만들어 이전 전투의 HP가 이어지지 않게 함
       Player = TrainerDB.CreatePlayer(Player.Name);
       CurrentBossNumber = bossNumber;
+      CurrentTrainerNumber = 0; // 보스전은 무한 모드가 아니므로 이전 Run 상태가 남아있지 않도록 정리
       BattleState battleState = new BattleState(Player, opponent);
       CurrentBattle = new BattleEngine(battleState);
+    }
+
+    /// <summary>
+    /// 무한 모드 새 Run을 시작함. 여기서만 플레이어를 새로 생성하며,
+    /// 이후 StartNextTrainer로 넘어갈 때는 Player를 그대로 유지해서 HP/기절 상태/가방이 이어짐.
+    /// </summary>
+    public void StartNewRun()
+    {
+      Player = TrainerDB.CreatePlayer(Player.Name);
+      Inventory.Clear();
+      Inventory[ItemDB.HpPotion] = 3;
+      CurrentBossNumber = null;
+      CurrentTrainerNumber = 1;
+      CreateCurrentTrainerBattle();
+    }
+
+    /// <summary>
+    /// 현재 트레이너를 쓰러뜨리고 보상을 받은 뒤 호출. Player는 재생성하지 않음.
+    /// </summary>
+    public void StartNextTrainer()
+    {
+      CurrentTrainerNumber++;
+      CreateCurrentTrainerBattle();
+    }
+
+    private void CreateCurrentTrainerBattle()
+    {
+      Trainer opponent = TrainerDB.CreateRandomTrainer(CurrentTrainerNumber);
+      BattleState battleState = new BattleState(Player, opponent);
+      CurrentBattle = new BattleEngine(battleState);
+    }
+
+    /// <summary>
+    /// 무한 모드 보상 등으로 도구를 획득했을 때 호출. 이미 있으면 개수만 늘림.
+    /// </summary>
+    public void AddItem(Item item, int amount = 1)
+    {
+      if (amount <= 0)
+      {
+        return;
+      }
+
+      Inventory[item] = GetItemCount(item) + amount;
     }
 
     public int GetItemCount(Item item) =>

@@ -27,7 +27,6 @@ namespace Pokemon.Page
   public partial class BattlePage : System.Windows.Controls.Page
   {
     private static readonly TimeSpan HpAnimationDuration = TimeSpan.FromMilliseconds(400);
-    // private static readonly TimeSpan MessageInterval = TimeSpan.FromSeconds(1.1);
     private static readonly TimeSpan EffectMoveDuration = TimeSpan.FromMilliseconds(550);
     private static readonly TimeSpan EffectFlashDuration = TimeSpan.FromMilliseconds(250);
     private const string ReadyPrompt = "어떻게 하시겠습니까?";
@@ -37,10 +36,9 @@ namespace Pokemon.Page
     public static BattlePage? Current { get; private set; }
 
     private readonly Queue<BattleEvent> pendingEvents = new();
-    // private readonly DispatcherTimer messageTimer;
 
     // 스킵 신호를 관리할 소스 (중요!)
-    private TaskCompletionSource<bool> skipSignaler; 
+    private TaskCompletionSource<bool>? skipSignaler;
     // 타이핑 진행 중인지 상태값
     private bool isDelaying = false;
 
@@ -54,14 +52,11 @@ namespace Pokemon.Page
     {
       InitializeComponent();
       Current = this;
-      // messageTimer = new DispatcherTimer { Interval = MessageInterval };
-      // messageTimer.Tick += (_, _) => AdvanceMessage();
       BattleImageFrame.Navigate(new BattleImagePage(bgFileName));
       RefreshUI();
       OppPokemonPanel.Visibility = Visibility.Hidden;
       PlayerPokemonPanel.Visibility = Visibility.Hidden;
       TextBox.Text = string.Empty;
-      TextBox2.Text = string.Empty;
       Loaded += BattlePage_Loaded;
       AudioService.PlayBgm("battle.mp3");
     }
@@ -76,6 +71,11 @@ namespace Pokemon.Page
 
     private async Task PlayTrainerIntroAsync()
     {
+      // 무한 모드일 때만 좌상단에 진행도("N번째 트레이너")를 표시함
+      TrainerCountText.Text = Game.State.CurrentTrainerNumber > 0
+        ? $"{Game.State.CurrentTrainerNumber}번째 트레이너"
+        : string.Empty;
+
       Trainer? opponent =
         Game.State.CurrentBattle?.State.Opposite;
 
@@ -206,10 +206,53 @@ namespace Pokemon.Page
       TrainerIntroStage.Visibility = Visibility.Collapsed;
       OppPokemonPanel.Visibility = Visibility.Visible;
       PlayerPokemonPanel.Visibility = Visibility.Visible;
+
+      // 무한 모드에서 ShowRewardSelection()이 이 프레임을 RewardButtonPage로 바꿔놓은 채로
+      // 남아있을 수 있으므로, 다음 트레이너 등장 연출이 끝나면 항상 기본 메뉴로 되돌림
+      MenuButtonFrame.Navigate(new MenuButtonPage());
       MenuButtonFrame.IsEnabled = true;
       TextBox.Text = ReadyPrompt;
     }
- 
+
+    /// <summary>
+    /// 무한 모드에서 트레이너를 쓰러뜨렸을 때 호출. 기존 스킬/포켓몬/가방 메뉴 대신 보상 3택1 화면을 보여줌.
+    /// </summary>
+    public void ShowRewardSelection()
+    {
+      TextBox.Text = "트레이너를 쓰러뜨렸다! 보상을 하나 선택하세요!";
+      MenuButtonFrame.Navigate(new RewardButtonPage());
+      MenuButtonFrame.IsEnabled = true;
+    }
+
+    /// <summary>
+    /// RewardButtonPage에서 보상을 하나 고른 뒤 호출됨.
+    /// 획득 메시지 -> 다음 트레이너 생성(Player는 유지되어 HP/기절/가방이 이어짐) -> 등장 연출 순으로 진행.
+    /// </summary>
+    public void ContinueToNextTrainer(Item rewardItem)
+    {
+      MenuButtonFrame.IsEnabled = false;
+
+      var rewardEvents = new List<BattleEvent>
+      {
+        new BattleEvent.Message($"{rewardItem.Name}을(를) 획득했다!")
+      };
+
+      // 곧바로 다음 트레이너 등장 연출이 이어지므로 "어떻게 하시겠습니까?"는 여기서 보여주지 않음
+      PlaySequence(rewardEvents, async () =>
+      {
+        Game.State.StartNextTrainer();
+
+        // 새 트레이너/포켓몬 정보로 스프라이트·이름·체력바를 갱신(안 하면 이전 트레이너의
+        // 마지막 포켓몬이 패널에 그대로 남아있다가 그대로 다시 보임)
+        RefreshUI();
+
+        OppPokemonPanel.Visibility = Visibility.Hidden;
+        PlayerPokemonPanel.Visibility = Visibility.Hidden;
+        TrainerIntroStage.Visibility = Visibility.Visible;
+        await PlayTrainerIntroAsync();
+      }, showReadyPrompt: false);
+    }
+
     /// <summary>
     /// 한 턴에서 발생한 이벤트들을 일정 시간 간격으로 자동 재생함.
     /// 전부 재생하고 나면 onComplete를 호출함.
@@ -249,9 +292,6 @@ namespace Pokemon.Page
 
         if (battleEvent is BattleEvent.PokemonSwitched switched)
         {
-          RefreshSide(
-            switched.IsPlayerSide,
-            switched.HpAtSwitch);
           // 교체 시점의 HP(HpAtSwitch)로 보여줘야 함. 여기서 실시간 CurrentHp를 읽으면,
           // 같은 턴 안에서 이미 계산까지 끝난(교체 직후 상대 반격 등) "미래의" 깎인 체력이
           // 반격 애니메이션이 뜨기도 전에 미리 반영돼 보이는 문제가 있었음.
@@ -373,6 +413,8 @@ namespace Pokemon.Page
 
     private void AnimateHpRecovery(BattleEvent.HpRecovered recovery)
     {
+      AudioService.PlaySfx("pokemon_recovery.mp3");
+
       var bar = recovery.TargetIsPlayer ? PlayerHpBar : OppHpBar;
       var animation = new DoubleAnimation
       {
@@ -505,9 +547,6 @@ namespace Pokemon.Page
       RefreshSide(isPlayerSide: true);
     }
 
-    private void RefreshSide(
-      bool isPlayerSide,
-      int? displayedHp = null)
     private void RefreshSide(bool isPlayerSide, int? hpOverride = null)
     {
       var engine = Game.State.CurrentBattle;
@@ -521,9 +560,6 @@ namespace Pokemon.Page
       {
         var pokemon = state.PlayerPokemon;
         PlayerNameText.Text = pokemon.Name;
-        PlayerHpBar.BeginAnimation(RangeBase.ValueProperty, null);
-        PlayerHpBar.Maximum = pokemon.MaxHp;
-        PlayerHpBar.Value = displayedHp ?? pokemon.CurrentHp;
         SnapHpBar(PlayerHpBar, HpRatioPercent(isPlayerTarget: true, hpOverride ?? pokemon.CurrentHp));
         PlayerSpriteImage.Source = LoadSprite(pokemon.BackImagePath);
       }
@@ -531,9 +567,6 @@ namespace Pokemon.Page
       {
         var pokemon = state.OppPokemon;
         OppNameText.Text = pokemon.Name;
-        OppHpBar.BeginAnimation(RangeBase.ValueProperty, null);
-        OppHpBar.Maximum = pokemon.MaxHp;
-        OppHpBar.Value = displayedHp ?? pokemon.CurrentHp;
         SnapHpBar(OppHpBar, HpRatioPercent(isPlayerTarget: false, hpOverride ?? pokemon.CurrentHp));
         OppSpriteImage.Source = LoadSprite(pokemon.FrontImagePath);
       }

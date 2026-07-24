@@ -177,7 +177,7 @@ internal static class PokemonDB
             .ToTitleCase(spacedName);
     }
 
-    public static IReadOnlyList<Pokemon> CreateRandomRoster(int count = 4)
+    public static IReadOnlyList<Pokemon> CreateRandomRoster(int count = 4, double statMultiplier = 1.0)
     {
         if (count < 1 || count > AllPokemon.Count)
         {
@@ -187,7 +187,7 @@ internal static class PokemonDB
         return AllPokemon
             .OrderBy(_ => Random.Shared.Next())
             .Take(count)
-            .Select(template => template.Clone(SkillDB.GetRandomMoves(4)))
+            .Select(template => template.Clone(SkillDB.GetRandomMoves(4), statMultiplier))
             .ToArray();
     }
 }

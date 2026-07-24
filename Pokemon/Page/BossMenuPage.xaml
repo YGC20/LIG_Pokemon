@@ -61,13 +61,19 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <UniformGrid Rows="2" Columns="2"
-                     HorizontalAlignment="Center"
-                     VerticalAlignment="Center">
-            <Button x:Name="Boss1Button" Content="보스 1" Style="{StaticResource BossMenuButtonStyle}" Click="Boss1Button_Click"/>
-            <Button x:Name="Boss2Button" Content="보스 2" Style="{StaticResource BossMenuButtonStyle}" Click="Boss2Button_Click"/>
-            <Button x:Name="Boss3Button" Content="보스 3" Style="{StaticResource BossMenuButtonStyle}" Click="Boss3Button_Click"/>
-            <Button x:Name="Boss4Button" Content="보스 4" Style="{StaticResource BossMenuButtonStyle}" Click="Boss4Button_Click"/>
-        </UniformGrid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <UniformGrid Rows="2" Columns="2">
+                <Button x:Name="Boss1Button" Content="보스 1" Style="{StaticResource BossMenuButtonStyle}" Click="Boss1Button_Click"/>
+                <Button x:Name="Boss2Button" Content="보스 2" Style="{StaticResource BossMenuButtonStyle}" Click="Boss2Button_Click"/>
+                <Button x:Name="Boss3Button" Content="보스 3" Style="{StaticResource BossMenuButtonStyle}" Click="Boss3Button_Click"/>
+                <Button x:Name="Boss4Button" Content="보스 4" Style="{StaticResource BossMenuButtonStyle}" Click="Boss4Button_Click"/>
+            </UniformGrid>
+
+            <Button x:Name="InfiniteModeButton"
+                    Content="무한 모드"
+                    Width="470"
+                    Style="{StaticResource BossMenuButtonStyle}"
+                    Click="InfiniteModeButton_Click"/>
+        </StackPanel>
     </Grid>
 </Page>

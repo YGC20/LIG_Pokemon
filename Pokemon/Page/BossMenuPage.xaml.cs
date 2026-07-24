@@ -61,5 +61,11 @@ namespace Pokemon.Page
             Game.State.BattleStart(TrainerDB.CreateGymLeader(4), 4);
             NavigationService.Navigate(new BattlePage("bg-forest.png"));
         }
+
+        private void InfiniteModeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Game.State.StartNewRun();
+            NavigationService.Navigate(new BattlePage("bg-beach.png"));
+        }
     }
 }
