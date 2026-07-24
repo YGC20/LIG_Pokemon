@@ -54,44 +54,70 @@
                NavigationUIVisibility="Hidden"/>
 
         <!-- 상대 포켓몬 정보 (우상단): 이름/체력 박스 + 스프라이트를 한 덩어리로 배치 -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,70,60,0">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,70,95,0">
             <Border Background="#E6FFFFFF" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10"
-                    Padding="10,6" VerticalAlignment="Center" Margin="0,0,10,-30">
+                    Padding="10,6" VerticalAlignment="Center" Margin="0,0,100,30">
                 <StackPanel>
-                    <TextBlock x:Name="OppNameText" FontSize="16" FontWeight="Bold" Foreground="#5A3D8C" HorizontalAlignment="Right"/>
-                    <ProgressBar x:Name="OppHpBar" Width="150" Height="14" Minimum="0" Foreground="LimeGreen"/>
+                    <TextBlock x:Name="OppNameText" FontSize="20" FontWeight="Bold" Foreground="#5A3D8C" HorizontalAlignment="Center"/>
+                    <ProgressBar x:Name="OppHpBar" Width="200" Height="14" Minimum="0" Foreground="LimeGreen"/>
                 </StackPanel>
             </Border>
-            <Image x:Name="OppSpriteImage" Width="170" Stretch="Uniform" VerticalAlignment="Center"/>
+            <Grid Width="170" VerticalAlignment="Center">
+                <Ellipse Width="100" Height="24" Fill="#802B2B2B"
+                          HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                    <Ellipse.Effect>
+                        <BlurEffect Radius="8"/>
+                    </Ellipse.Effect>
+                </Ellipse>
+                <Image x:Name="OppSpriteImage" Stretch="Uniform"/>
+            </Grid>
         </StackPanel>
 
         <!-- 내 포켓몬 정보 (좌하단): 스프라이트 + 이름/체력 박스를 한 덩어리로 배치 -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="50,0,0,-20">
             <Image x:Name="PlayerSpriteImage" Width="170" Stretch="Uniform" VerticalAlignment="Center"/>
             <Border Background="#E6FFFFFF" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10"
-                    Padding="10,6" VerticalAlignment="Center" Margin="10,0,0,-60">
+                    Padding="10,6" VerticalAlignment="Center" Margin="120,0,0,-30">
                 <StackPanel>
-                    <TextBlock x:Name="PlayerNameText" FontSize="16" FontWeight="Bold" Foreground="#5A3D8C"/>
-                    <ProgressBar x:Name="PlayerHpBar" Width="150" Height="14" Minimum="0" Foreground="LimeGreen"/>
+                    <TextBlock x:Name="PlayerNameText" FontSize="20" FontWeight="Bold" Foreground="#5A3D8C" HorizontalAlignment="Center"/>
+                    <ProgressBar x:Name="PlayerHpBar" Width="200" Height="14" Minimum="0" Foreground="LimeGreen"/>
                 </StackPanel>
             </Border>
         </StackPanel>
 
+        <!-- 공격 이펙트 오버레이: 포켓몬 스프라이트 위에 그려지는 투사체/타격 효과 -->
+        <Canvas Grid.Row="0"
+                x:Name="EffectCanvas"
+                Background="Transparent"
+                IsHitTestVisible="False"
+                ClipToBounds="True"/>
+
         <Border Grid.Row="1"
                 x:Name="MessageBorder"
                 Background="#E6FFFFFF"
-                BorderBrush="DarkGray"
+                BorderBrush="IndianRed"
                 BorderThickness="10"
                 CornerRadius="16"
                 Margin="1"
                 Padding="15,10">
-            <TextBlock x:Name="TextBox"
-                       FontSize="18"
-                       FontWeight="Bold"
-                       Foreground="#5A3D8C"
-                       TextWrapping="Wrap"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Top"/>
+            <StackPanel> 
+                <TextBlock x:Name="TextBox"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="#5A3D8C"
+                    TextWrapping="Wrap"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="0,7,0,7"/>
+                 <TextBlock x:Name="TextBox2"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="#5A3D8C"
+                    TextWrapping="Wrap"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="0,7,0,7"/>
+            </StackPanel>
         </Border>
 
         <Frame Grid.Row="2"

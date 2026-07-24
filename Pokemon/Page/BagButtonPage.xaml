@@ -1,0 +1,56 @@
+<Page x:Class="Pokemon.Page.BagButtonPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      Title="BagButtonPage">
+    <Page.Resources>
+        <Style x:Key="ItemButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#5A3D8C"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="#E6FFFFFF"
+                                BorderBrush="GreenYellow"
+                                BorderThickness="3"
+                                CornerRadius="16">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button x:Name="Item1Button" Grid.Row="0" Grid.Column="0" Style="{StaticResource ItemButtonStyle}" Click="Item1ButtonClick"/>
+        <Button x:Name="Item2Button" Grid.Row="0" Grid.Column="1" Content="도구2 * 0" Style="{StaticResource ItemButtonStyle}" IsEnabled="False"/>
+        <Button x:Name="Item3Button" Grid.Row="1" Grid.Column="0" Content="도구3 * 0" Style="{StaticResource ItemButtonStyle}" IsEnabled="False"/>
+        <Button x:Name="Item4Button" Grid.Row="1" Grid.Column="1" Content="도구4 * 0" Style="{StaticResource ItemButtonStyle}" IsEnabled="False"/>
+        <Button x:Name="BackButton" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="550" Content="뒤로가기" Style="{StaticResource ItemButtonStyle}" Click="BackButtonClick"/>
+    </Grid>
+</Page>

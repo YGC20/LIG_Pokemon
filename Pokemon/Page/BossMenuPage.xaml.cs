@@ -24,6 +24,18 @@ namespace Pokemon.Page
         {
             InitializeComponent();
             AudioService.PlayBgm("battle_choice_bgm.mp3");
+            UpdateBossButtonStates();
+        }
+
+        /// <summary>
+        /// 이미 클리어한 관장의 버튼은 비활성화(회색)해서 다시 도전할 수 없게 함
+        /// </summary>
+        private void UpdateBossButtonStates()
+        {
+            Boss1Button.IsEnabled = !Game.State.IsBossDefeated(1);
+            Boss2Button.IsEnabled = !Game.State.IsBossDefeated(2);
+            Boss3Button.IsEnabled = !Game.State.IsBossDefeated(3);
+            Boss4Button.IsEnabled = !Game.State.IsBossDefeated(4);
         }
 
         private void Boss1Button_Click(object sender, RoutedEventArgs e)

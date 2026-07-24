@@ -54,6 +54,14 @@ namespace Pokemon.Models
             CurrentHp = Math.Max(0, CurrentHp - damage);
         }
 
+        /// <returns>실제로 회복된 HP량(최대 HP를 넘지 않도록 보정된 값)</returns>
+        public int Heal(int amount)
+        {
+            int beforeHp = CurrentHp;
+            CurrentHp = Math.Min(MaxHp, CurrentHp + amount);
+            return CurrentHp - beforeHp;
+        }
+
         // PokemonDB의 static 인스턴스는 여러 전투에서 재사용되는 "템플릿"이므로,
         // 실제 전투 로스터를 만들 때는 항상 이 메서드로 HP가 초기화된 새 인스턴스를 만들어야 함.
         public Pokemon Clone() => new(Id, Name, Type, MaxHp, Attack, Defense, Skills);

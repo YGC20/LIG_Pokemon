@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -32,6 +33,11 @@ namespace Pokemon.Page
                 Skill2Button.Content = BuildSkillContent(skills[1]);
                 Skill3Button.Content = BuildSkillContent(skills[2]);
                 Skill4Button.Content = BuildSkillContent(skills[3]);
+
+                Skill1Button.DataContext = skills[0];
+                Skill2Button.DataContext = skills[1];
+                Skill3Button.DataContext = skills[2];
+                Skill4Button.DataContext = skills[3];
             }
         }
 
@@ -71,7 +77,7 @@ namespace Pokemon.Page
             var newEvents = state.Events.Skip(eventsBefore).ToList();
 
             SetSkillButtonsEnabled(false);
-            battlePage.PlaySequence(newEvents, () => OnTurnMessagesFinished(outcome));
+            battlePage.PlaySequence(newEvents, () => OnTurnMessagesFinished(outcome), showReadyPrompt: !outcome.RequiresPlayerSwitch);
         }
 
         private void SetSkillButtonsEnabled(bool isEnabled)
@@ -95,6 +101,12 @@ namespace Pokemon.Page
 
                 var mainWindow = (Pokemon.MainWindow)System.Windows.Application.Current.MainWindow;
                 mainWindow.MainFrame.Navigate(new ResultPage(playerWon));
+                return;
+            }
+
+            if (outcome.RequiresPlayerSwitch)
+            {
+                NavigationService.Navigate(new PokemonButtonPage());
                 return;
             }
 
