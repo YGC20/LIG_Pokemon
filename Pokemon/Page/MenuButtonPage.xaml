@@ -42,7 +42,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="4*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -52,6 +52,7 @@
 
         <Button x:Name="SkillButton" Grid.Row="0" Grid.Column="0" Content="스킬" Style="{StaticResource BossMenuButtonStyle}" Click="SkillButtonClick"/>
         <Button x:Name="PokemonButton" Grid.Row="0" Grid.Column="1" Content="포켓몬" Style="{StaticResource BossMenuButtonStyle}" Click="PokemonButtonClick"/>
-        <Button x:Name="BackButton" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="550" Content="도망가기" Style="{StaticResource BossMenuButtonStyle}" Click="BackButtonClick"/>
+        <Button x:Name="BagButton" Grid.Row="1" Grid.Column="0" Content="가방" Style="{StaticResource BossMenuButtonStyle}" Click="BagButtonClick"/>
+        <Button x:Name="BackButton" Grid.Row="1" Grid.Column="1" Content="도망가기" Style="{StaticResource BossMenuButtonStyle}" Click="BackButtonClick"/>
     </Grid>
 </Page>

@@ -57,7 +57,7 @@ namespace Pokemon.Page
             var newEvents = state.Events.Skip(eventsBefore).ToList();
 
             SetSkillButtonsEnabled(false);
-            battlePage.PlaySequence(newEvents, () => OnTurnMessagesFinished(outcome));
+            battlePage.PlaySequence(newEvents, () => OnTurnMessagesFinished(outcome), showReadyPrompt: !outcome.RequiresPlayerSwitch);
         }
 
         private void SetSkillButtonsEnabled(bool isEnabled)

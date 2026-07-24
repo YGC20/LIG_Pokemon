@@ -38,5 +38,10 @@ namespace Pokemon.Page
             var mainWindow = (Pokemon.MainWindow)System.Windows.Application.Current.MainWindow;
             mainWindow.MainFrame.Navigate(new BossMenuPage());
         }
+
+        private void BagButtonClick(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new BagButtonPage());
+        }
     }
 }
