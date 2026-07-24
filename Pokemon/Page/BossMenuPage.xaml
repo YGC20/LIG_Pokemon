@@ -1,0 +1,79 @@
+﻿<Page x:Class="Pokemon.Page.BossMenuPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Pokemon.Page"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="BossMenuPage">
+
+    <Page.Resources>
+        <Style x:Key="BossMenuButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#5A3D8C"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="#E6FFFFFF"
+                                BorderBrush="GreenYellow"
+                                BorderThickness="5"
+                                CornerRadius="16">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#CCFFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#D9D9D9"/>
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="Gray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <Setter Property="Cursor" Value="Arrow"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#B347D9" Offset="0.0"/>
+                <GradientStop Color="#6A5ACD" Offset="0.5"/>
+                <GradientStop Color="#45E0E0" Offset="1.0"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <UniformGrid Rows="2" Columns="2">
+                <Button x:Name="Boss1Button" Content="보스 1" Style="{StaticResource BossMenuButtonStyle}" Click="Boss1Button_Click"/>
+                <Button x:Name="Boss2Button" Content="보스 2" Style="{StaticResource BossMenuButtonStyle}" Click="Boss2Button_Click"/>
+                <Button x:Name="Boss3Button" Content="보스 3" Style="{StaticResource BossMenuButtonStyle}" Click="Boss3Button_Click"/>
+                <Button x:Name="Boss4Button" Content="보스 4" Style="{StaticResource BossMenuButtonStyle}" Click="Boss4Button_Click"/>
+            </UniformGrid>
+
+            <Button x:Name="InfiniteModeButton"
+                    Content="무한 모드"
+                    Width="470"
+                    Style="{StaticResource BossMenuButtonStyle}"
+                    Click="InfiniteModeButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>

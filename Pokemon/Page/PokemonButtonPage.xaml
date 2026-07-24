@@ -1,0 +1,60 @@
+﻿<Page x:Class="Pokemon.Page.PokemonButtonPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Pokemon.Page"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PokemonButtonPage">
+
+    <Page.Resources>
+        <Style x:Key="PokemonButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#5A3D8C"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                        Background="#E6FFFFFF"
+                        BorderBrush="GreenYellow"
+                        BorderThickness="5"
+                        CornerRadius="16">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#CCFFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button x:Name="Pokemon1Button" Grid.Row="0" Grid.Column="0" Content="포켓몬" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon1ButtonClick"/>
+        <Button x:Name="Pokemon2Button" Grid.Row="0" Grid.Column="1" Content="포켓몬" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon2ButtonClick"/>
+        <Button x:Name="Pokemon3Button" Grid.Row="1" Grid.Column="0" Content="포켓몬" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon3ButtonClick"/>
+        <Button x:Name="Pokemon4Button" Grid.Row="1" Grid.Column="1" Content="포켓몬" Style="{StaticResource PokemonButtonStyle}" Click="Pokemon4ButtonClick"/>
+        <Button x:Name="BackButton" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="550" Content="뒤로가기" Style="{StaticResource PokemonButtonStyle}" Click="BackButtonClick"/>
+    </Grid>
+</Page>
