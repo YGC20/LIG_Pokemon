@@ -87,7 +87,8 @@ namespace Pokemon.Page
                 SetPokemonButtonsEnabled(false);
                 battlePage.PlaySequence(
                     newEvents,
-                    () => OnSwitchFinished(outcome));
+                    () => OnSwitchFinished(outcome),
+                    showReadyPrompt: !outcome.RequiresPlayerSwitch);
             }
             catch (InvalidOperationException exception)
             {
