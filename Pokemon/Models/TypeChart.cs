@@ -8,14 +8,26 @@ internal static class TypeChart
 {
     private static readonly HashSet<(PokemonType Attacker, PokemonType Defender)> StrongAgainst = new()
     {
-        (PokemonType.Water, PokemonType.Fire),
         (PokemonType.Water, PokemonType.Ground),
-        (PokemonType.Grass, PokemonType.Electric),
+        (PokemonType.Water, PokemonType.Fire),
+        (PokemonType.Grass, PokemonType.Ground),
         (PokemonType.Grass, PokemonType.Water),
+        (PokemonType.Grass, PokemonType.Electric),
+        (PokemonType.Electric, PokemonType.Flying),
         (PokemonType.Electric, PokemonType.Water),
+        (PokemonType.Fire, PokemonType.Grass),
+        (PokemonType.Fire, PokemonType.Ice),
         (PokemonType.Ground, PokemonType.Fire),
         (PokemonType.Ground, PokemonType.Electric),
-        (PokemonType.Fire, PokemonType.Grass),
+        (PokemonType.Flying, PokemonType.Ground),
+        (PokemonType.Flying, PokemonType.Fighting),
+        (PokemonType.Flying, PokemonType.Grass),
+        (PokemonType.Ice, PokemonType.Ground),
+        (PokemonType.Ice, PokemonType.Grass),
+        (PokemonType.Ice, PokemonType.Water),
+        (PokemonType.Fighting, PokemonType.Normal),
+        (PokemonType.Fighting, PokemonType.Ice),
+        // Normal: 공격 시 유리한 상성 없음
     };
 
     public static double GetMultiplier(PokemonType attacker, PokemonType defender)
