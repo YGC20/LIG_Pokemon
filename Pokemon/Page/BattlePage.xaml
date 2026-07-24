@@ -85,13 +85,24 @@
                 CornerRadius="16"
                 Margin="1"
                 Padding="15,10">
-            <TextBlock x:Name="TextBox"
-                       FontSize="18"
-                       FontWeight="Bold"
-                       Foreground="#5A3D8C"
-                       TextWrapping="Wrap"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Top"/>
+            <StackPanel> 
+                <TextBlock x:Name="TextBox"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="#5A3D8C"
+                    TextWrapping="Wrap"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="0,7,0,7"/>
+                 <TextBlock x:Name="TextBox2"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="#5A3D8C"
+                    TextWrapping="Wrap"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="0,7,0,7"/>
+            </StackPanel>
         </Border>
 
         <Frame Grid.Row="2"
