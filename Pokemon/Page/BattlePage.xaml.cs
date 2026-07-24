@@ -81,7 +81,7 @@ namespace Pokemon.Page
 
                 if (battleEvent is BattleEvent.PokemonSwitched switched)
                 {
-                    RefreshSide(switched.IsPlayerSide);
+                    RefreshSide(switched.IsPlayerSide, switched.HpAtSwitch);
                     continue;
                 }
 
@@ -118,7 +118,7 @@ namespace Pokemon.Page
             RefreshSide(isPlayerSide: true);
         }
 
-        private void RefreshSide(bool isPlayerSide)
+        private void RefreshSide(bool isPlayerSide, int? displayedHp = null)
         {
             var engine = Game.State.CurrentBattle;
             if (engine is null)
@@ -133,7 +133,7 @@ namespace Pokemon.Page
                 PlayerNameText.Text = pokemon.Name;
                 PlayerHpBar.BeginAnimation(RangeBase.ValueProperty, null);
                 PlayerHpBar.Maximum = pokemon.MaxHp;
-                PlayerHpBar.Value = pokemon.CurrentHp;
+                PlayerHpBar.Value = displayedHp ?? pokemon.CurrentHp;
                 PlayerSpriteImage.Source = LoadSprite(pokemon.BackImagePath);
             }
             else
@@ -142,7 +142,7 @@ namespace Pokemon.Page
                 OppNameText.Text = pokemon.Name;
                 OppHpBar.BeginAnimation(RangeBase.ValueProperty, null);
                 OppHpBar.Maximum = pokemon.MaxHp;
-                OppHpBar.Value = pokemon.CurrentHp;
+                OppHpBar.Value = displayedHp ?? pokemon.CurrentHp;
                 OppSpriteImage.Source = LoadSprite(pokemon.FrontImagePath);
             }
         }
