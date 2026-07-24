@@ -58,8 +58,156 @@ namespace Pokemon.Page
       // messageTimer.Tick += (_, _) => AdvanceMessage();
       BattleImageFrame.Navigate(new BattleImagePage(bgFileName));
       RefreshUI();
-      TextBox.Text = ReadyPrompt;
+      OppPokemonPanel.Visibility = Visibility.Hidden;
+      PlayerPokemonPanel.Visibility = Visibility.Hidden;
+      TextBox.Text = string.Empty;
+      TextBox2.Text = string.Empty;
+      Loaded += BattlePage_Loaded;
       AudioService.PlayBgm("battle.mp3");
+    }
+
+    private async void BattlePage_Loaded(
+      object sender,
+      RoutedEventArgs e)
+    {
+      Loaded -= BattlePage_Loaded;
+      await PlayTrainerIntroAsync();
+    }
+
+    private async Task PlayTrainerIntroAsync()
+    {
+      Trainer? opponent =
+        Game.State.CurrentBattle?.State.Opposite;
+
+      if (opponent is null)
+      {
+        FinishTrainerIntro();
+        return;
+      }
+
+      if (opponent.ImagePath is string imagePath)
+      {
+        TrainerIntroImage.Source = LoadSprite(imagePath);
+      }
+      else
+      {
+        FinishTrainerIntro();
+        return;
+      }
+
+      var enterEase = new CubicEase
+      {
+        EasingMode = EasingMode.EaseOut
+      };
+      var enterDuration = TimeSpan.FromMilliseconds(500);
+
+      TrainerIntroTransform.BeginAnimation(
+        TranslateTransform.XProperty,
+        new DoubleAnimation(180, 0, enterDuration)
+        {
+          EasingFunction = enterEase
+        });
+      TrainerIntroImage.BeginAnimation(
+        OpacityProperty,
+        new DoubleAnimation(0, 1, enterDuration));
+
+      await Task.Delay(enterDuration);
+
+      string challengeMessage =
+        $"{opponent.Name}{KoreanParticle.Subject(opponent.Name)} 승부를 걸어왔다!";
+      await TypeMessageAsync(challengeMessage, charsPerSecond: 22);
+      await Task.Delay(900);
+
+      var exitEase = new CubicEase
+      {
+        EasingMode = EasingMode.EaseIn
+      };
+      var exitDuration = TimeSpan.FromMilliseconds(450);
+
+      TrainerIntroTransform.BeginAnimation(
+        TranslateTransform.XProperty,
+        new DoubleAnimation(0, 180, exitDuration)
+        {
+          EasingFunction = exitEase
+        });
+      TrainerIntroImage.BeginAnimation(
+        OpacityProperty,
+        new DoubleAnimation(1, 0, exitDuration));
+
+      await Task.Delay(exitDuration);
+
+      TrainerIntroStage.Visibility = Visibility.Collapsed;
+
+      Pokemon.Models.Pokemon? firstPokemon =
+        Game.State.CurrentBattle?.State.OppPokemon;
+
+      if (firstPokemon is not null)
+      {
+        await RevealPokemonPanelAsync(
+          OppPokemonPanel,
+          startX: 90);
+
+        string sendOutMessage =
+          $"{opponent.Name}{KoreanParticle.Topic(opponent.Name)} " +
+          $"{firstPokemon.Name}{KoreanParticle.Object(firstPokemon.Name)} 내보냈다!";
+
+        await TypeMessageAsync(sendOutMessage, charsPerSecond: 22);
+        await Task.Delay(800);
+      }
+
+      Pokemon.Models.Pokemon? playerPokemon =
+        Game.State.CurrentBattle?.State.PlayerPokemon;
+
+      if (playerPokemon is not null)
+      {
+        await RevealPokemonPanelAsync(
+          PlayerPokemonPanel,
+          startX: -90);
+
+        await TypeMessageAsync(
+          $"가라! {playerPokemon.Name}!",
+          charsPerSecond: 22);
+        await Task.Delay(800);
+      }
+
+      FinishTrainerIntro();
+    }
+
+    private static async Task RevealPokemonPanelAsync(
+      FrameworkElement panel,
+      double startX)
+    {
+      var transform = new TranslateTransform(startX, 0);
+      panel.RenderTransform = transform;
+      panel.Opacity = 0;
+      panel.Visibility = Visibility.Visible;
+
+      var duration = TimeSpan.FromMilliseconds(400);
+      var easing = new CubicEase
+      {
+        EasingMode = EasingMode.EaseOut
+      };
+
+      transform.BeginAnimation(
+        TranslateTransform.XProperty,
+        new DoubleAnimation(startX, 0, duration)
+        {
+          EasingFunction = easing
+        });
+      panel.BeginAnimation(
+        OpacityProperty,
+        new DoubleAnimation(0, 1, duration));
+
+      await Task.Delay(duration);
+    }
+
+    private void FinishTrainerIntro()
+    {
+      TrainerIntroStage.Visibility = Visibility.Collapsed;
+      OppPokemonPanel.Visibility = Visibility.Visible;
+      PlayerPokemonPanel.Visibility = Visibility.Visible;
+      MenuButtonFrame.IsEnabled = true;
+      TextBox.Text = ReadyPrompt;
     }
  
     /// <summary>
@@ -101,6 +249,9 @@ namespace Pokemon.Page
 
         if (battleEvent is BattleEvent.PokemonSwitched switched)
         {
+          RefreshSide(
+            switched.IsPlayerSide,
+            switched.HpAtSwitch);
           // 교체 시점의 HP(HpAtSwitch)로 보여줘야 함. 여기서 실시간 CurrentHp를 읽으면,
           // 같은 턴 안에서 이미 계산까지 끝난(교체 직후 상대 반격 등) "미래의" 깎인 체력이
           // 반격 애니메이션이 뜨기도 전에 미리 반영돼 보이는 문제가 있었음.
@@ -354,6 +505,9 @@ namespace Pokemon.Page
       RefreshSide(isPlayerSide: true);
     }
 
+    private void RefreshSide(
+      bool isPlayerSide,
+      int? displayedHp = null)
     private void RefreshSide(bool isPlayerSide, int? hpOverride = null)
     {
       var engine = Game.State.CurrentBattle;
@@ -367,6 +521,9 @@ namespace Pokemon.Page
       {
         var pokemon = state.PlayerPokemon;
         PlayerNameText.Text = pokemon.Name;
+        PlayerHpBar.BeginAnimation(RangeBase.ValueProperty, null);
+        PlayerHpBar.Maximum = pokemon.MaxHp;
+        PlayerHpBar.Value = displayedHp ?? pokemon.CurrentHp;
         SnapHpBar(PlayerHpBar, HpRatioPercent(isPlayerTarget: true, hpOverride ?? pokemon.CurrentHp));
         PlayerSpriteImage.Source = LoadSprite(pokemon.BackImagePath);
       }
@@ -374,6 +531,9 @@ namespace Pokemon.Page
       {
         var pokemon = state.OppPokemon;
         OppNameText.Text = pokemon.Name;
+        OppHpBar.BeginAnimation(RangeBase.ValueProperty, null);
+        OppHpBar.Maximum = pokemon.MaxHp;
+        OppHpBar.Value = displayedHp ?? pokemon.CurrentHp;
         SnapHpBar(OppHpBar, HpRatioPercent(isPlayerTarget: false, hpOverride ?? pokemon.CurrentHp));
         OppSpriteImage.Source = LoadSprite(pokemon.FrontImagePath);
       }

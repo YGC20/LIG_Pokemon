@@ -10,6 +10,7 @@ namespace Pokemon.Models
         public int Id { get; }
         public string Name { get; }
         public PokemonType Type { get; }
+        public string SpriteKey { get; }
 
         public int MaxHp { get; }
         public int CurrentHp { get; private set; }
@@ -20,10 +21,10 @@ namespace Pokemon.Models
         public IReadOnlyList<Skill> Skills { get; }
 
         public string FrontImagePath =>
-            $"/Assets/Pokemon/Front/{Id}.png";
+            $"/Assets/Pokemon/Front/{SpriteKey}.png";
 
         public string BackImagePath =>
-            $"/Assets/Pokemon/Back/{Id}.png";
+            $"/Assets/Pokemon/Back/{SpriteKey}.png";
 
         public bool IsFainted => CurrentHp <= 0;
 
@@ -34,11 +35,13 @@ namespace Pokemon.Models
             int maxHp,
             int attack,
             int defense,
-            IEnumerable<Skill> skills)
+            IEnumerable<Skill> skills,
+            string? spriteKey = null)
         {
             Id = id;
             Name = name;
             Type = type;
+            SpriteKey = spriteKey ?? id.ToString();
 
             MaxHp = maxHp;
             CurrentHp = maxHp;
@@ -64,6 +67,15 @@ namespace Pokemon.Models
 
         // PokemonDB의 static 인스턴스는 여러 전투에서 재사용되는 "템플릿"이므로,
         // 실제 전투 로스터를 만들 때는 항상 이 메서드로 HP가 초기화된 새 인스턴스를 만들어야 함.
-        public Pokemon Clone() => new(Id, Name, Type, MaxHp, Attack, Defense, Skills);
+        public Pokemon Clone(IEnumerable<Skill>? skills = null) =>
+            new(
+                Id,
+                Name,
+                Type,
+                MaxHp,
+                Attack,
+                Defense,
+                skills ?? Skills,
+                SpriteKey);
     }
 }

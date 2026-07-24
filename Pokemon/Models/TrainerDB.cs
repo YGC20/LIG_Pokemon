@@ -1,61 +1,124 @@
+using System;
+using System.IO;
+using System.Linq;
+
 namespace Pokemon.Models;
 
-// 주인공/관장 로스터는 전부 고정. 매 전투마다 새 Trainer/Pokemon 인스턴스를 만들어야
-// (Clone) 이전 전투에서 깎인 HP가 다음 전투에 그대로 남는 문제가 없음.
+// 배틀이 시작될 때마다 플레이어와 관장에게 무작위 포켓몬 4마리를 배정한다.
 internal static class TrainerDB
 {
-    public static Trainer CreatePlayer(string name)
+    private const int RosterSize = 4;
+
+    private static readonly string[] Adjectives =
+    [
+        "짧은 바지",
+        "열정적인",
+        "수상한",
+        "용감한",
+        "재빠른",
+        "노련한",
+        "승부욕 강한",
+        "잠이 덜 깬",
+        "자신만만한",
+        "여행을 좋아하는",
+        "포켓몬을 사랑하는",
+        "신비로운"
+    ];
+
+    private static readonly string[] Roles =
+    [
+        "소년",
+        "소녀",
+        "등산가",
+        "연구원",
+        "무도가",
+        "수영선수",
+        "포켓몬 애호가",
+        "베테랑",
+        "캠핑족",
+        "예술가",
+        "탐험가",
+        "엘리트 트레이너"
+    ];
+
+    private static readonly string[] GivenNames =
+    [
+        "기태",
+        "민준",
+        "서준",
+        "지우",
+        "하늘",
+        "도윤",
+        "유진",
+        "수빈",
+        "예린",
+        "가람",
+        "태오",
+        "나래",
+        "현우",
+        "다은",
+        "시온",
+        "은호"
+    ];
+
+    private static Trainer CreateRandomTrainer(
+        string name,
+        string? spriteKey = null)
     {
-        var trainer = new Trainer(name);
-        trainer.Pokemons.Add(PokemonDB.Pikachu.Clone());
-        trainer.Pokemons.Add(PokemonDB.Mudkip.Clone());
-        trainer.Pokemons.Add(PokemonDB.Heracross.Clone());
-        trainer.Pokemons.Add(PokemonDB.Lucario.Clone());
+        var trainer = new Trainer(name, spriteKey);
+        trainer.Pokemons.AddRange(PokemonDB.CreateRandomRoster(RosterSize));
         return trainer;
     }
 
-    public static Trainer CreateGymLeader(int bossNumber) => bossNumber switch
-    {
-        1 => CreateGymLeader1(),
-        2 => CreateGymLeader2(),
-        3 => CreateGymLeader3(),
-        4 => CreateGymLeader4(),
-        _ => throw new System.ArgumentOutOfRangeException(nameof(bossNumber)),
-    };
+    public static Trainer CreatePlayer(string name) =>
+        CreateRandomTrainer(name);
 
-    // 물 관장
-    private static Trainer CreateGymLeader1()
+    public static Trainer CreateGymLeader(int bossNumber)
     {
-        var trainer = new Trainer("물의 관장");
-        trainer.Pokemons.Add(PokemonDB.Magikarp.Clone());
-        trainer.Pokemons.Add(PokemonDB.Piplup.Clone());
-        return trainer;
+        _ = bossNumber switch
+        {
+            1 or 2 or 3 or 4 => bossNumber,
+            _ => throw new System.ArgumentOutOfRangeException(nameof(bossNumber)),
+        };
+
+        return CreateRandomTrainer(
+            CreateRandomOpponentName(),
+            GetRandomTrainerSpriteKey());
     }
 
-    // 전기 관장
-    private static Trainer CreateGymLeader2()
+    private static string CreateRandomOpponentName()
     {
-        var trainer = new Trainer("전기의 관장");
-        trainer.Pokemons.Add(PokemonDB.Pachirisu.Clone());
-        trainer.Pokemons.Add(PokemonDB.Mewtwo.Clone());
-        return trainer;
+        string adjective =
+            Adjectives[Random.Shared.Next(Adjectives.Length)];
+        string role =
+            Roles[Random.Shared.Next(Roles.Length)];
+        string givenName =
+            GivenNames[Random.Shared.Next(GivenNames.Length)];
+
+        return $"{adjective} {role} {givenName}";
     }
 
-    // 땅 관장
-    private static Trainer CreateGymLeader3()
+    private static string? GetRandomTrainerSpriteKey()
     {
-        var trainer = new Trainer("땅의 관장");
-        trainer.Pokemons.Add(PokemonDB.Trapinch.Clone());
-        trainer.Pokemons.Add(PokemonDB.Garchomp.Clone());
-        return trainer;
-    }
+        string directory = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Trainers");
 
-    // 숲의 수호자
-    private static Trainer CreateGymLeader4()
-    {
-        var trainer = new Trainer("숲의 수호자");
-        trainer.Pokemons.Add(PokemonDB.Snorlax.Clone());
-        trainer.Pokemons.Add(PokemonDB.Drifloon.Clone());
-        return trainer;
+        if (!Directory.Exists(directory))
+        {
+            return null;
+        }
+
+        string[] spriteKeys = Directory
+            .EnumerateFiles(directory, "*.png")
+            .Select(Path.GetFileNameWithoutExtension)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Select(name => name!)
+            .ToArray();
+
+        return spriteKeys.Length == 0
+            ? null
+            : spriteKeys[Random.Shared.Next(spriteKeys.Length)];
     }
 }

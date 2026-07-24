@@ -64,7 +64,12 @@
                NavigationUIVisibility="Hidden"/>
 
         <!-- 상대 포켓몬 정보 (우상단): 이름/체력 박스 + 스프라이트를 한 덩어리로 배치 -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,70,95,0">
+        <StackPanel Grid.Row="0"
+                    x:Name="OppPokemonPanel"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="10,70,95,0">
             <Border Background="#E6FFFFFF" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10"
                     Padding="10,6" VerticalAlignment="Center" Margin="0,0,100,30">
                 <StackPanel>
@@ -84,6 +89,12 @@
         </StackPanel>
 
         <!-- 내 포켓몬 정보 (좌하단): 스프라이트 + 이름/체력 박스를 한 덩어리로 배치 -->
+        <StackPanel Grid.Row="0"
+                    x:Name="PlayerPokemonPanel"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    Margin="50,0,0,-20">
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="50,0,0,-30">
             <Image x:Name="PlayerSpriteImage" Width="170" Stretch="Uniform" VerticalAlignment="Center"/>
             <Border Background="#E6FFFFFF" BorderBrush="DarkGray" BorderThickness="2" CornerRadius="10"
@@ -101,6 +112,27 @@
                 Background="Transparent"
                 IsHitTestVisible="False"
                 ClipToBounds="True"/>
+
+        <!-- 상대 포켓몬 자리에서 등장했다가 퇴장하는 트레이너 -->
+        <Grid Grid.Row="0"
+              x:Name="TrainerIntroStage"
+              Panel.ZIndex="20"
+              IsHitTestVisible="False">
+            <Image x:Name="TrainerIntroImage"
+                   Width="190"
+                   Height="250"
+                   Margin="0,25,75,0"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   Stretch="Uniform"
+                   Opacity="0"
+                   RenderOptions.BitmapScalingMode="NearestNeighbor">
+                <Image.RenderTransform>
+                    <TranslateTransform x:Name="TrainerIntroTransform"
+                                        X="180"/>
+                </Image.RenderTransform>
+            </Image>
+        </Grid>
 
         <Border Grid.Row="1"
                 x:Name="MessageBorder"
@@ -133,6 +165,7 @@
         <Frame Grid.Row="2"
                x:Name="MenuButtonFrame"
                Source="/Page/MenuButtonPage.xaml"
+               IsEnabled="False"
                NavigationUIVisibility="Hidden"/>
     </Grid>
 </Page>

@@ -101,6 +101,18 @@ namespace Pokemon.Core
       state.Events.Add(new BattleEvent.DamageDealt(targetIsPlayer, dst.CurrentHp));
       state.AddLog($"{dst.Name}은(는) {damage}의 피해를 입었다!");
 
+      double effectiveness =
+        TypeChart.GetMultiplier(skill.Type, dst.Type);
+
+      if (effectiveness > 1.0)
+      {
+        state.AddLog("효과가 굉장했다!");
+      }
+      else if (effectiveness < 1.0)
+      {
+        state.AddLog("효과가 별로인 듯하다...");
+      }
+
       if (dst.IsFainted)
       {
         state.AddLog($"{dst.Name}은(는) 쓰러졌다!");
@@ -215,7 +227,9 @@ namespace Pokemon.Core
         state.Events.Add(new BattleEvent.PokemonSwitched(
           IsPlayerSide: false,
           HpAtSwitch: next.CurrentHp));
-        state.AddLog($"상대가 {next.Name}을(를) 내보냈다!");
+        state.AddLog(
+          $"{state.Opposite.Name}{KoreanParticle.Topic(state.Opposite.Name)} " +
+          $"{next.Name}{KoreanParticle.Object(next.Name)} 내보냈다!");
 
         // 상대가 쓰러져 새 포켓몬을 내보낸 턴은 여기서 종료하고, 상대는 공격하지 않음(새 턴은 플레이어부터 시작)
         return new TurnOutcome { BattleEnded = false };
