@@ -91,6 +91,37 @@ namespace Pokemon.Page
 
         if (battleEvent is BattleEvent.Message message)
         {
+            while (pendingEvents.Count > 0)
+            {
+                var battleEvent = pendingEvents.Dequeue();
+
+                if (battleEvent is BattleEvent.DamageDealt damage)
+                {
+                    AnimateHp(damage);
+                    continue;
+                }
+
+                if (battleEvent is BattleEvent.PokemonSwitched switched)
+                {
+                    RefreshSide(switched.IsPlayerSide, switched.HpAtSwitch);
+                    continue;
+                }
+
+                if (battleEvent is BattleEvent.Message message)
+                {
+                    TextBox.Text = message.Text;
+                    return;
+                }
+            }
+
+            messageTimer.Stop();
+            RefreshUI();
+            TextBox.Text = ReadyPrompt;
+
+            var complete = onSequenceComplete;
+            onSequenceComplete = null;
+            complete?.Invoke();
+        }
           // 한 글자씩 출력하는 비동기 로직 실행 후 대기
           await TypeMessageAsync(message.Text, charsPerSecond: 15);
 

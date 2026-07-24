@@ -19,6 +19,7 @@ namespace Pokemon.Core
   public class TurnOutcome
   {
     public bool BattleEnded { get; init; }
+    public bool RequiresPlayerSwitch { get; init; }
     public Trainer? Winner { get; init; }
   }
 
@@ -31,7 +32,7 @@ namespace Pokemon.Core
 
     public sealed record DamageDealt(bool TargetIsPlayer, int NewHp) : BattleEvent;
 
-    public sealed record PokemonSwitched(bool IsPlayerSide) : BattleEvent;
+    public sealed record PokemonSwitched(bool IsPlayerSide, int HpAtSwitch) : BattleEvent;
 
     public sealed record AttackEffect(bool AttackerIsPlayer, PokemonType SkillType) : BattleEvent;
   }
@@ -131,6 +132,67 @@ namespace Pokemon.Core
       state.Turn++;
     }
 
+    private void ValidatePlayerSwitch(Pokemon.Models.Pokemon selected)
+    {
+      if (!state.Player.Pokemons.Contains(selected))
+      {
+        throw new InvalidOperationException("보유하지 않은 포켓몬입니다.");
+      }
+
+      if (selected.IsFainted)
+      {
+        throw new InvalidOperationException("기절한 포켓몬은 교체할 수 없습니다.");
+      }
+
+      if (ReferenceEquals(selected, state.PlayerPokemon))
+      {
+        throw new InvalidOperationException("현재 전투 중인 포켓몬입니다.");
+      }
+    }
+
+    /// <summary>
+    /// 현재 포켓몬이 살아 있으면 일반 교체 후 상대가 공격하고,
+    /// 기절한 상태이면 강제 교체만 하고 상대는 추가 공격하지 않는다.
+    /// </summary>
+    public TurnOutcome PerformPlayerSwitch(Pokemon.Models.Pokemon selected)
+    {
+      bool isForcedSwitch = state.PlayerPokemon.IsFainted;
+
+      ValidatePlayerSwitch(selected);
+
+      state.PlayerPokemon = selected;
+      state.Events.Add(new BattleEvent.PokemonSwitched(
+        IsPlayerSide: true,
+        HpAtSwitch: selected.CurrentHp));
+      state.AddLog($"가라! {selected.Name}!");
+
+      if (isForcedSwitch)
+      {
+        return new TurnOutcome { BattleEnded = false };
+      }
+
+      state.Turn++;
+      OppositeAction();
+
+      if (!state.PlayerPokemon.IsFainted)
+      {
+        return new TurnOutcome { BattleEnded = false };
+      }
+
+      if (!state.Player.AvailablePokemons.Any())
+      {
+        CheckBattleEnd(out var winner);
+        return new TurnOutcome { BattleEnded = true, Winner = winner };
+      }
+
+      state.AddLog("교체할 포켓몬을 선택하세요.");
+      return new TurnOutcome
+      {
+        BattleEnded = false,
+        RequiresPlayerSwitch = true
+      };
+    }
+
     /// <summary>
     /// 플레이어가 스킬을 선택했을 때의 한 턴 전체 처리(공격 -> 기절 처리 -> 상대 턴 -> 기절 처리 -> 종료 판정)
     /// </summary>
@@ -148,7 +210,9 @@ namespace Pokemon.Core
           return new TurnOutcome { BattleEnded = true, Winner = winner };
         }
         state.OppPokemon = next;
-        state.Events.Add(new BattleEvent.PokemonSwitched(IsPlayerSide: false));
+        state.Events.Add(new BattleEvent.PokemonSwitched(
+          IsPlayerSide: false,
+          HpAtSwitch: next.CurrentHp));
         state.AddLog($"상대가 {next.Name}을(를) 내보냈다!");
       }
 
@@ -156,15 +220,18 @@ namespace Pokemon.Core
 
       if (state.PlayerPokemon.IsFainted)
       {
-        var next = state.Player.AvailablePokemons.FirstOrDefault();
-        if (next is null)
+        if (!state.Player.AvailablePokemons.Any())
         {
           CheckBattleEnd(out var winner);
           return new TurnOutcome { BattleEnded = true, Winner = winner };
         }
-        state.PlayerPokemon = next;
-        state.Events.Add(new BattleEvent.PokemonSwitched(IsPlayerSide: true));
-        state.AddLog($"가라! {next.Name}!");
+
+        state.AddLog("교체할 포켓몬을 선택하세요.");
+        return new TurnOutcome
+        {
+          BattleEnded = false,
+          RequiresPlayerSwitch = true
+        };
       }
 
       return new TurnOutcome { BattleEnded = false };

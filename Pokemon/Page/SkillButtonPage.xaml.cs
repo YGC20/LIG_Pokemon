@@ -84,6 +84,12 @@ namespace Pokemon.Page
                 return;
             }
 
+            if (outcome.RequiresPlayerSwitch)
+            {
+                NavigationService.Navigate(new PokemonButtonPage());
+                return;
+            }
+
             NavigationService.Navigate(new MenuButtonPage());
         }
 
