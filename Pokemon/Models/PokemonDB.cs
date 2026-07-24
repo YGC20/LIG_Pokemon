@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 
 namespace Pokemon.Models;
@@ -62,8 +64,118 @@ internal static class PokemonDB
         Pikachu, Slowpoke, Magikarp, Snorlax, Dragonite,
         Mewtwo, Heracross, HoOh, Mudkip, Trapinch,
         Castform, Piplup, Bibarel, Pachirisu, Drifloon,
-        Garchomp, Lucario, Dialga, Palkia
+        Garchomp, Lucario, Dialga, Palkia,
+        .. LoadSpritePokemon()
     ];
+
+    private static IReadOnlyList<Pokemon> LoadSpritePokemon()
+    {
+        string frontDirectory = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Pokemon",
+            "Front");
+        string backDirectory = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Pokemon",
+            "Back");
+
+        if (!Directory.Exists(frontDirectory) ||
+            !Directory.Exists(backDirectory))
+        {
+            return [];
+        }
+
+        PokemonType[] types = Enum.GetValues<PokemonType>();
+        IReadOnlyDictionary<string, string> koreanNames =
+            LoadKoreanNames();
+
+        return Directory
+            .EnumerateFiles(frontDirectory, "*.png")
+            .Select(Path.GetFileNameWithoutExtension)
+            .Where(spriteKey =>
+                spriteKey is not null &&
+                !int.TryParse(spriteKey, out _) &&
+                File.Exists(Path.Combine(
+                    backDirectory,
+                    $"{spriteKey}.png")))
+            .OrderBy(spriteKey => spriteKey)
+            .Select((spriteKey, index) =>
+            {
+                int value = GetStableValue(spriteKey!);
+                PokemonType type = types[value % types.Length];
+
+                return new Pokemon(
+                    id: 10_000 + index,
+                    name: GetPokemonName(spriteKey!, koreanNames),
+                    type: type,
+                    maxHp: 50 + value % 61,
+                    attack: 20 + value % 31,
+                    defense: 15 + value % 26,
+                    skills: SkillDB.GetMovesFor(type),
+                    spriteKey: spriteKey);
+            })
+            .ToArray();
+    }
+
+    private static IReadOnlyDictionary<string, string> LoadKoreanNames()
+    {
+        string filePath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Pokemon",
+            "pokemon-names.tsv");
+
+        if (!File.Exists(filePath))
+        {
+            return new Dictionary<string, string>();
+        }
+
+        var names = new Dictionary<string, string>(
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (string line in File.ReadLines(filePath).Skip(1))
+        {
+            string[] columns = line.Split('\t', 2);
+
+            if (columns.Length == 2 &&
+                !string.IsNullOrWhiteSpace(columns[0]) &&
+                !string.IsNullOrWhiteSpace(columns[1]))
+            {
+                names[columns[0]] = columns[1];
+            }
+        }
+
+        return names;
+    }
+
+    private static int GetStableValue(string value)
+    {
+        int result = 17;
+
+        foreach (char character in value)
+        {
+            result = unchecked(result * 31 + character);
+        }
+
+        return result & int.MaxValue;
+    }
+
+    private static string GetPokemonName(
+        string spriteKey,
+        IReadOnlyDictionary<string, string> koreanNames)
+    {
+        if (koreanNames.TryGetValue(spriteKey, out string? koreanName))
+        {
+            return koreanName;
+        }
+
+        string spacedName = spriteKey.Replace('-', ' ');
+
+        return CultureInfo.InvariantCulture.TextInfo
+            .ToTitleCase(spacedName);
+    }
 
     public static IReadOnlyList<Pokemon> CreateRandomRoster(int count = 4)
     {

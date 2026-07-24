@@ -8,6 +8,12 @@ namespace Pokemon.Models;
 public class Trainer
 {
     public string Name { get; }
+    public string? SpriteKey { get; }
+
+    public string? ImagePath =>
+        SpriteKey is null
+            ? null
+            : $"/Assets/Trainers/{SpriteKey}.png";
 
     public List<Pokemon> Pokemons { get; } = [];
 
@@ -21,8 +27,9 @@ public class Trainer
     public bool IsDefeated =>
         RemainingPokemonCount == 0;
 
-    public Trainer(string name)
+    public Trainer(string name, string? spriteKey = null)
     {
         Name = name;
+        SpriteKey = spriteKey;
     }
 }

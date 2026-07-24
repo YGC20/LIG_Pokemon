@@ -33,8 +33,8 @@ internal static class SkillDB
 
     // Ground
     public static readonly Skill MudSlap = new("진흙뿌리기", PokemonType.Ground, 15);
-    public static readonly Skill SandTomb = new("사구몰이", PokemonType.Ground, 25);
-    public static readonly Skill Dig = new("다이빙", PokemonType.Ground, 40);
+    public static readonly Skill SandTomb = new("대지의 힘", PokemonType.Ground, 45);
+    public static readonly Skill Dig = new("구멍파기", PokemonType.Ground, 40);
     public static readonly Skill Earthquake = new("지진", PokemonType.Ground, 80);
 
     // Flying
@@ -50,8 +50,8 @@ internal static class SkillDB
     public static readonly Skill Blizzard = new("블리자드", PokemonType.Ice, 90);
 
     // Fighting
-    public static readonly Skill LowSweep = new("딴죽걸기", PokemonType.Fighting, 20);
-    public static readonly Skill KarateChop = new("가라테촙", PokemonType.Fighting, 35);
+    public static readonly Skill LowSweep = new("지구던지기", PokemonType.Fighting, 20);
+    public static readonly Skill KarateChop = new("깨뜨리다", PokemonType.Fighting, 35);
     public static readonly Skill CloseCombat = new("인파이트", PokemonType.Fighting, 75);
     public static readonly Skill HighJumpKick = new("필살앞차기", PokemonType.Fighting, 110);
 
