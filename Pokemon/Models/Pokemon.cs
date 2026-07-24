@@ -67,7 +67,7 @@ namespace Pokemon.Models
 
         // PokemonDB의 static 인스턴스는 여러 전투에서 재사용되는 "템플릿"이므로,
         // 실제 전투 로스터를 만들 때는 항상 이 메서드로 HP가 초기화된 새 인스턴스를 만들어야 함.
-        public Pokemon Clone(IEnumerable<Skill>? skills = null) =>
+        public Pokemon Clone() =>
             new(
                 Id,
                 Name,
@@ -75,7 +75,7 @@ namespace Pokemon.Models
                 MaxHp,
                 Attack,
                 Defense,
-                skills ?? Skills,
+                Skills,
                 SpriteKey);
     }
 }
